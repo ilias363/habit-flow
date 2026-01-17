@@ -19,6 +19,7 @@ const MAPPING: Record<string, MaterialIconName> = {
   "chevron.right": "chevron-right",
   "list.bullet": "checklist",
   "chart.bar.fill": "insights",
+  "gearshape.fill": "settings",
 };
 
 /**
