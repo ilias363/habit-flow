@@ -22,7 +22,6 @@ export default function HomeScreen() {
   const { habits, loading, refreshHabits, logHabit } = useHabits();
   const [refreshing, setRefreshing] = useState(false);
 
-  const backgroundColor = useThemeColor({}, "background");
   const tintColor = useThemeColor({}, "tint");
 
   // Refresh habits when screen comes into focus
