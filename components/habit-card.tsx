@@ -19,6 +19,8 @@ export function HabitCard({ habit, onPress, onLog }: HabitCardProps) {
   const cardBackground = useThemeColor({}, "card");
   const borderColor = useThemeColor({}, "cardBorder");
   const mutedColor = useThemeColor({}, "muted");
+  const backgroundColor = useThemeColor({}, "background");
+  const textColor = useThemeColor({}, "text");
 
   const handleLog = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -73,8 +75,10 @@ export function HabitCard({ habit, onPress, onLog }: HabitCardProps) {
         >
           <ThemedText style={styles.logButtonText}>+1</ThemedText>
           {habit.todayLogs > 0 && (
-            <View style={styles.todayBadge}>
-              <ThemedText style={styles.todayBadgeText}>{habit.todayLogs}</ThemedText>
+            <View style={[styles.todayBadge, { backgroundColor }]}>
+              <ThemedText style={[styles.todayBadgeText, { color: textColor }]}>
+                {habit.todayLogs}
+              </ThemedText>
             </View>
           )}
         </Pressable>
@@ -139,7 +143,6 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: -4,
     right: -4,
-    backgroundColor: "#FFFFFF",
     borderRadius: 10,
     minWidth: 20,
     height: 20,
@@ -148,7 +151,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 6,
   },
   todayBadgeText: {
-    color: "#000000",
     fontSize: 12,
     fontWeight: "700",
   },

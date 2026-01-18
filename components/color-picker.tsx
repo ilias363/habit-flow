@@ -5,6 +5,7 @@
 import * as Haptics from "expo-haptics";
 import { Pressable, StyleSheet, View } from "react-native";
 
+import { useThemeColor } from "@/hooks/use-theme-color";
 import { HABIT_COLORS } from "@/types";
 
 interface ColorPickerProps {
@@ -21,6 +22,8 @@ function ColorOption({
   isSelected: boolean;
   onPress: () => void;
 }) {
+  const backgroundColor = useThemeColor({}, "background");
+
   const handlePress = () => {
     Haptics.selectionAsync();
     onPress();
@@ -31,8 +34,14 @@ function ColorOption({
       onPress={handlePress}
       style={({ pressed }) => [styles.colorOption, { opacity: pressed ? 0.7 : 1 }]}
     >
-      <View style={[styles.colorCircle, { backgroundColor: color }, isSelected && styles.selected]}>
-        {isSelected && <View style={styles.checkmark} />}
+      <View
+        style={[
+          styles.colorCircle,
+          { backgroundColor: color },
+          isSelected && [styles.selected, { borderColor: backgroundColor }],
+        ]}
+      >
+        {isSelected && <View style={[styles.checkmark, { backgroundColor }]} />}
       </View>
     </Pressable>
   );
@@ -73,7 +82,6 @@ const styles = StyleSheet.create({
   },
   selected: {
     borderWidth: 3,
-    borderColor: "#FFFFFF",
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
@@ -84,6 +92,5 @@ const styles = StyleSheet.create({
     width: 12,
     height: 12,
     borderRadius: 6,
-    backgroundColor: "#FFFFFF",
   },
 });

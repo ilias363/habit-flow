@@ -24,6 +24,7 @@ function EmojiOption({
   onPress: () => void;
 }) {
   const cardBorder = useThemeColor({}, "cardBorder");
+  const tintColor = useThemeColor({}, "tint");
 
   const handlePress = () => {
     Haptics.selectionAsync();
@@ -38,8 +39,8 @@ function EmojiOption({
       <View
         style={[
           styles.emojiCircle,
-          { borderColor: isSelected ? "#6366F1" : cardBorder },
-          isSelected && styles.selected,
+          { borderColor: isSelected ? tintColor : cardBorder },
+          isSelected && { borderColor: tintColor, backgroundColor: tintColor + "15" },
         ]}
       >
         <ThemedText style={styles.emoji}>{emoji}</ThemedText>
@@ -82,11 +83,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  selected: {
-    borderColor: "#6366F1",
-    backgroundColor: "rgba(99, 102, 241, 0.1)",
-  },
   emoji: {
-    fontSize: 24,
+    fontSize: 22,
   },
 });

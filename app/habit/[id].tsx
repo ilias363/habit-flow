@@ -45,6 +45,7 @@ export default function HabitDetailScreen() {
   const dangerColor = useThemeColor({}, "danger");
   const cardBackground = useThemeColor({}, "card");
   const borderColor = useThemeColor({}, "cardBorder");
+  const tintColor = useThemeColor({}, "tint");
 
   const loadHabit = useCallback(async () => {
     if (!id) return;
@@ -202,8 +203,8 @@ export default function HabitDetailScreen() {
       <ThemedView style={styles.container}>
         <View style={[styles.header, { paddingTop: insets.top + 8 }]}>
           <Pressable onPress={handleBack} style={styles.backButton}>
-            <MaterialIcons name="chevron-left" size={28} color="#007AFF" />
-            <ThemedText style={styles.backText}>Back</ThemedText>
+            <MaterialIcons name="chevron-left" size={28} color={tintColor} />
+            <ThemedText style={[styles.backText, { color: tintColor }]}>Back</ThemedText>
           </Pressable>
         </View>
         <EmptyState
@@ -219,8 +220,8 @@ export default function HabitDetailScreen() {
     <ThemedView style={styles.container}>
       <View style={[styles.header, { paddingTop: insets.top + 8 }]}>
         <Pressable onPress={handleBack} style={styles.backButton}>
-          <MaterialIcons name="chevron-left" size={28} color="#007AFF" />
-          <ThemedText style={styles.backText}>Back</ThemedText>
+          <MaterialIcons name="chevron-left" size={28} color={tintColor} />
+          <ThemedText style={[styles.backText, { color: tintColor }]}>Back</ThemedText>
         </Pressable>
         <View style={styles.headerActions}>
           <Pressable onPress={handleEdit} style={styles.headerAction}>
@@ -355,7 +356,6 @@ const styles = StyleSheet.create({
   },
   backText: {
     fontSize: 17,
-    color: "#007AFF",
   },
   headerActions: {
     flexDirection: "row",

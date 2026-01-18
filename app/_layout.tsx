@@ -21,6 +21,8 @@ export default function RootLayout() {
       background: Colors.dark.background,
       card: Colors.dark.card,
       border: Colors.dark.cardBorder,
+      text: Colors.dark.text,
+      primary: Colors.dark.tint,
     },
   };
 
@@ -31,6 +33,8 @@ export default function RootLayout() {
       background: Colors.light.background,
       card: Colors.light.card,
       border: Colors.light.cardBorder,
+      text: Colors.light.text,
+      primary: Colors.light.tint,
     },
   };
 

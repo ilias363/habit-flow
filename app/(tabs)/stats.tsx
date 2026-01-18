@@ -178,7 +178,7 @@ const styles = StyleSheet.create({
   container: { flex: 1 },
   header: { paddingHorizontal: 16, paddingBottom: 16 },
   subtitle: { fontSize: 15, marginTop: 4 },
-  content: { paddingHorizontal: 16, paddingBottom: 32 },
+  content: { paddingHorizontal: 16, paddingTop: 6, paddingBottom: 32 },
   section: { marginTop: 8 },
   sectionTitle: { marginBottom: 12 },
   habitCard: { borderRadius: 14, borderWidth: 1, marginBottom: 12, overflow: "hidden" },

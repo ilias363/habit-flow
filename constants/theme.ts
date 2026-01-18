@@ -6,12 +6,12 @@
 import { Platform } from "react-native";
 
 const tintColorLight = "#0a7ea4";
-const tintColorDark = "#fff";
+const tintColorDark = "#4ECDC4";
 
 export const Colors = {
   light: {
     text: "#11181C",
-    background: "#fff",
+    background: "#FFFFFF",
     tint: tintColorLight,
     icon: "#687076",
     tabIconDefault: "#687076",
@@ -26,7 +26,7 @@ export const Colors = {
   },
   dark: {
     text: "#ECEDEE",
-    background: "#0D0D0D",
+    background: "#000000",
     tint: tintColorDark,
     icon: "#9BA1A6",
     tabIconDefault: "#9BA1A6",
@@ -34,8 +34,8 @@ export const Colors = {
     // Extended colors for habit app
     card: "#1A1A1A",
     cardBorder: "#2D2D2D",
-    success: "#22C55E",
-    danger: "#EF4444",
+    success: "#4ADE80",
+    danger: "#F87171",
     muted: "#9CA3AF",
     surface: "#1A1A1A",
   },
