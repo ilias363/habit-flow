@@ -46,6 +46,8 @@ export function HabitCard({ habit, onPress, onLog }: HabitCardProps) {
   return (
     <Pressable
       onPress={onPress}
+      accessibilityLabel={`${habit.name}, ${habit.currentStreak} day streak`}
+      accessibilityRole="button"
       style={[styles.card, { backgroundColor: cardBackground, borderColor }]}
     >
       <View style={styles.content}>
@@ -69,6 +71,8 @@ export function HabitCard({ habit, onPress, onLog }: HabitCardProps) {
 
         <Pressable
           onPress={handleLog}
+          accessibilityLabel={`Log ${habit.name}`}
+          accessibilityRole="button"
           style={({ pressed }) => [
             styles.logButton,
             { backgroundColor: habit.color, opacity: pressed ? 0.8 : 1 },

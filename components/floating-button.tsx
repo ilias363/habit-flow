@@ -6,13 +6,17 @@ import * as Haptics from "expo-haptics";
 import { Pressable, StyleSheet } from "react-native";
 
 import { ThemedText } from "@/components/themed-text";
+import { useThemeColor } from "@/hooks/use-theme-color";
 
 interface FloatingButtonProps {
   onPress: () => void;
   color?: string;
 }
 
-export function FloatingButton({ onPress, color = "#6366F1" }: FloatingButtonProps) {
+export function FloatingButton({ onPress, color }: FloatingButtonProps) {
+  const tintColor = useThemeColor({}, "tint");
+  const buttonColor = color || tintColor;
+
   const handlePress = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     onPress();
@@ -21,9 +25,11 @@ export function FloatingButton({ onPress, color = "#6366F1" }: FloatingButtonPro
   return (
     <Pressable
       onPress={handlePress}
+      accessibilityLabel="Add new habit"
+      accessibilityRole="button"
       style={({ pressed }) => [
         styles.button,
-        { backgroundColor: color, opacity: pressed ? 0.8 : 1 },
+        { backgroundColor: buttonColor, opacity: pressed ? 0.8 : 1 },
       ]}
     >
       <ThemedText style={styles.icon}>+</ThemedText>
