@@ -2,6 +2,7 @@
  * Stats Screen - Shows comprehensive habit statistics
  */
 
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { useFocusEffect, useRouter } from "expo-router";
 import { useState } from "react";
 import { Pressable, ScrollView, StyleSheet, View } from "react-native";
@@ -106,8 +107,8 @@ export default function StatsScreen() {
                   ]}
                 >
                   <View style={styles.habitRow}>
-                    <View style={[styles.habitEmoji, { backgroundColor: habit.color + "20" }]}>
-                      <ThemedText style={styles.emoji}>{habit.emoji}</ThemedText>
+                    <View style={[styles.habitIcon, { backgroundColor: habit.color + "20" }]}>
+                      <MaterialIcons name={habit.icon} size={24} color={habit.color} />
                     </View>
                     <View style={styles.habitInfo}>
                       <ThemedText style={styles.habitName}>{habit.name}</ThemedText>
@@ -147,7 +148,7 @@ export default function StatsScreen() {
                         </ThemedText>
                       )}
                       <Pressable
-                        onPress={() => router.push(`/habit/${habit.id}` as any)}
+                        onPress={() => router.push(`/habit/${habit.id}`)}
                         style={[styles.viewBtn, { backgroundColor: habit.color }]}
                       >
                         <ThemedText style={styles.viewBtnText}>View History</ThemedText>
@@ -183,14 +184,13 @@ const styles = StyleSheet.create({
   sectionTitle: { marginBottom: 12 },
   habitCard: { borderRadius: 14, borderWidth: 1, marginBottom: 12, overflow: "hidden" },
   habitRow: { flexDirection: "row", alignItems: "center", padding: 14, gap: 12 },
-  habitEmoji: {
+  habitIcon: {
     width: 48,
     height: 48,
     borderRadius: 12,
     alignItems: "center",
     justifyContent: "center",
   },
-  emoji: { fontSize: 24, lineHeight: 30 },
   habitInfo: { flex: 1, gap: 2 },
   habitName: { fontSize: 16, fontWeight: "600" },
   habitStats: { fontSize: 13 },

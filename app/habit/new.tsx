@@ -2,6 +2,7 @@
  * New Habit Screen - Create a new habit
  */
 
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import * as Haptics from "expo-haptics";
 import { useRouter } from "expo-router";
 import { useState } from "react";
@@ -19,12 +20,12 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { ColorPicker } from "@/components/color-picker";
-import { EmojiPicker } from "@/components/emoji-picker";
+import { IconPicker } from "@/components/icon-picker";
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { useHabits } from "@/hooks/use-habits";
 import { useThemeColor } from "@/hooks/use-theme-color";
-import { HABIT_COLORS, HABIT_EMOJIS } from "@/types";
+import { HABIT_COLORS, HABIT_ICONS, IconName } from "@/types";
 
 export default function NewHabitScreen() {
   const router = useRouter();
@@ -32,7 +33,7 @@ export default function NewHabitScreen() {
   const { createHabit } = useHabits();
 
   const [name, setName] = useState("");
-  const [emoji, setEmoji] = useState<string>(HABIT_EMOJIS[0]);
+  const [icon, setIcon] = useState<IconName>(HABIT_ICONS[0]);
   const [color, setColor] = useState<string>(HABIT_COLORS[0]);
   const [saving, setSaving] = useState(false);
 
@@ -51,7 +52,7 @@ export default function NewHabitScreen() {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
 
     try {
-      await createHabit({ name: name.trim(), emoji, color });
+      await createHabit({ name: name.trim(), icon, color });
       router.back();
     } catch {
       Alert.alert("Error", "Failed to create habit");
@@ -97,7 +98,7 @@ export default function NewHabitScreen() {
           {/* Preview */}
           <View style={styles.previewContainer}>
             <View style={[styles.preview, { backgroundColor: color + "20" }]}>
-              <ThemedText style={styles.previewEmoji}>{emoji}</ThemedText>
+              <MaterialIcons name={icon} size={40} color={color} />
               <ThemedText style={styles.previewName} numberOfLines={1}>
                 {name || "Habit Name"}
               </ThemedText>
@@ -122,10 +123,10 @@ export default function NewHabitScreen() {
             />
           </View>
 
-          {/* Emoji Selection */}
+          {/* Icon Selection */}
           <View style={styles.section}>
             <ThemedText style={styles.label}>Icon</ThemedText>
-            <EmojiPicker selectedEmoji={emoji} onSelect={setEmoji} />
+            <IconPicker selectedIcon={icon} onSelect={setIcon} color={color} />
           </View>
 
           {/* Color Selection */}
@@ -178,10 +179,6 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     alignItems: "center",
     gap: 8,
-  },
-  previewEmoji: {
-    fontSize: 56,
-    lineHeight: 64,
   },
   previewName: {
     fontSize: 20,

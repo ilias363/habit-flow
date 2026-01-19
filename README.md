@@ -4,7 +4,7 @@ A habit tracking app built with React Native and Expo. Track your daily habits, 
 
 ## Features
 
-- **Track Habits** - Create and log habits with custom emojis and colors
+- **Track Habits** - Create and log habits with custom icons and colors
 - **Detailed Statistics** - View your progress with charts and insights
 - **Streak Tracking** - Stay motivated with streak counters
 - **Historical Logs** - Log habits for past dates and view your history

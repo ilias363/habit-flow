@@ -2,6 +2,7 @@
  * Edit Habit Screen - Edit an existing habit
  */
 
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import * as Haptics from "expo-haptics";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
@@ -20,13 +21,13 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { ColorPicker } from "@/components/color-picker";
-import { EmojiPicker } from "@/components/emoji-picker";
+import { IconPicker } from "@/components/icon-picker";
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { useHabits } from "@/hooks/use-habits";
 import { useThemeColor } from "@/hooks/use-theme-color";
 import { getHabits } from "@/lib/storage";
-import { Habit } from "@/types";
+import { Habit, IconName } from "@/types";
 
 export default function EditHabitScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -37,7 +38,7 @@ export default function EditHabitScreen() {
   const [habit, setHabit] = useState<Habit | null>(null);
   const [loading, setLoading] = useState(true);
   const [name, setName] = useState("");
-  const [emoji, setEmoji] = useState("");
+  const [icon, setIcon] = useState<IconName>("check-circle");
   const [color, setColor] = useState("");
   const [saving, setSaving] = useState(false);
 
@@ -54,7 +55,7 @@ export default function EditHabitScreen() {
       if (found) {
         setHabit(found);
         setName(found.name);
-        setEmoji(found.emoji);
+        setIcon(found.icon);
         setColor(found.color);
       }
       setLoading(false);
@@ -72,7 +73,7 @@ export default function EditHabitScreen() {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
 
     try {
-      await updateHabit(habit.id, { name: name.trim(), emoji, color });
+      await updateHabit(habit.id, { name: name.trim(), icon, color });
       router.back();
     } catch {
       Alert.alert("Error", "Failed to update habit");
@@ -143,7 +144,7 @@ export default function EditHabitScreen() {
           {/* Preview */}
           <View style={styles.previewContainer}>
             <View style={[styles.preview, { backgroundColor: color + "20" }]}>
-              <ThemedText style={styles.previewEmoji}>{emoji}</ThemedText>
+              <MaterialIcons name={icon} size={40} color={color} />
               <ThemedText style={styles.previewName} numberOfLines={1}>
                 {name || "Habit Name"}
               </ThemedText>
@@ -168,10 +169,10 @@ export default function EditHabitScreen() {
             />
           </View>
 
-          {/* Emoji Selection */}
+          {/* Icon Selection */}
           <View style={styles.section}>
             <ThemedText style={styles.label}>Icon</ThemedText>
-            <EmojiPicker selectedEmoji={emoji} onSelect={setEmoji} />
+            <IconPicker selectedIcon={icon} onSelect={setIcon} color={color} />
           </View>
 
           {/* Color Selection */}
@@ -234,10 +235,6 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     alignItems: "center",
     gap: 8,
-  },
-  previewEmoji: {
-    fontSize: 56,
-    lineHeight: 64,
   },
   previewName: {
     fontSize: 20,

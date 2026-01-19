@@ -2,10 +2,14 @@
  * Core data models for the habit tracking app
  */
 
+import type { MaterialIcons } from "@expo/vector-icons";
+
+export type IconName = keyof typeof MaterialIcons.glyphMap;
+
 export interface Habit {
   id: string;
   name: string;
-  emoji: string;
+  icon: IconName;
   color: string;
   createdAt: number; // timestamp
   updatedAt: number; // timestamp
@@ -39,34 +43,45 @@ export const HABIT_COLORS: string[] = [
   "#3B82F6", // Blue
 ];
 
-// Default emoji for habits
-export const DEFAULT_HABIT_EMOJI = "⭐";
-
-// Predefined emojis for habits
-export const HABIT_EMOJIS: string[] = [
-  "⭐",
-  "💪",
-  "🏃",
-  "📚",
-  "💧",
-  "🧘",
-  "💤",
-  "🍎",
-  "✍️",
-  "🎯",
-  "🧹",
-  "💊",
-  "🌿",
-  "☕",
-  "🎵",
-  "🧠",
-  "🙏",
-  "🚶",
-  "🏋️",
-  "📝",
-  "🍳",
-  "🧘‍♂️",
-  "😴",
-  "🥗",
-  "🎨",
-];
+// Predefined icons for habits (Material Icons names)
+export const HABIT_ICONS = [
+  // General
+  "check-circle",
+  "star",
+  "favorite",
+  // Health & Fitness
+  "fitness-center",
+  "directions-run",
+  "directions-bike",
+  "pool",
+  "self-improvement",
+  "sports-martial-arts",
+  // Wellness
+  "water-drop",
+  "bedtime",
+  "medication",
+  "psychology",
+  "wb-sunny",
+  "spa",
+  // Productivity
+  "menu-book",
+  "edit-note",
+  "laptop-mac",
+  "track-changes",
+  "alarm",
+  "task-alt",
+  // Lifestyle
+  "local-dining",
+  "restaurant",
+  "coffee",
+  "smoke-free",
+  "cleaning-services",
+  "savings",
+  // Creative & Social
+  "palette",
+  "music-note",
+  "photo-camera",
+  "record-voice-over",
+  "groups",
+  "call",
+] as const;

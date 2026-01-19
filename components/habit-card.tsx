@@ -2,6 +2,7 @@
  * HabitCard - Displays a single habit with quick log button
  */
 
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import * as Haptics from "expo-haptics";
 import { Pressable, StyleSheet, View } from "react-native";
 
@@ -48,8 +49,8 @@ export function HabitCard({ habit, onPress, onLog }: HabitCardProps) {
       style={[styles.card, { backgroundColor: cardBackground, borderColor }]}
     >
       <View style={styles.content}>
-        <View style={[styles.emojiContainer, { backgroundColor: habit.color + "20" }]}>
-          <ThemedText style={styles.emoji}>{habit.emoji}</ThemedText>
+        <View style={[styles.iconContainer, { backgroundColor: habit.color + "20" }]}>
+          <MaterialIcons name={habit.icon} size={28} color={habit.color} />
         </View>
 
         <View style={styles.info}>
@@ -101,16 +102,12 @@ const styles = StyleSheet.create({
     padding: 16,
     gap: 12,
   },
-  emojiContainer: {
+  iconContainer: {
     width: 50,
     height: 50,
     borderRadius: 13,
     alignItems: "center",
     justifyContent: "center",
-  },
-  emoji: {
-    fontSize: 26,
-    lineHeight: 32,
   },
   info: {
     flex: 1,

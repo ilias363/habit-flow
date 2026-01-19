@@ -3,7 +3,10 @@
  */
 
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-import DateTimePicker, { DateTimePickerAndroid } from "@react-native-community/datetimepicker";
+import DateTimePicker, {
+  DateTimePickerAndroid,
+  DateTimePickerEvent,
+} from "@react-native-community/datetimepicker";
 import * as Haptics from "expo-haptics";
 import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
@@ -129,7 +132,7 @@ export default function HabitDetailScreen() {
     }
   };
 
-  const handleDateChange = (event: any, date?: Date) => {
+  const handleDateChange = (event: DateTimePickerEvent, date?: Date) => {
     if (date) {
       setSelectedDate(date);
     }
@@ -145,7 +148,7 @@ export default function HabitDetailScreen() {
 
   const handleEdit = () => {
     if (!habit) return;
-    router.push(`/habit/edit/${habit.id}` as any);
+    router.push(`/habit/edit/${habit.id}`);
   };
 
   const handleDelete = () => {
@@ -233,8 +236,8 @@ export default function HabitDetailScreen() {
 
       {/* Habit Header */}
       <View style={styles.habitHeader}>
-        <View style={[styles.emojiContainer, { backgroundColor: habit.color + "20" }]}>
-          <ThemedText style={styles.emoji}>{habit.emoji}</ThemedText>
+        <View style={[styles.iconContainer, { backgroundColor: habit.color + "20" }]}>
+          <MaterialIcons name={habit.icon} size={40} color={habit.color} />
         </View>
         <ThemedText type="title" style={styles.habitName}>
           {habit.name}
@@ -373,16 +376,12 @@ const styles = StyleSheet.create({
     paddingVertical: 24,
     gap: 12,
   },
-  emojiContainer: {
+  iconContainer: {
     width: 88,
     height: 88,
     borderRadius: 22,
     alignItems: "center",
     justifyContent: "center",
-  },
-  emoji: {
-    fontSize: 44,
-    lineHeight: 52,
   },
   habitName: {
     textAlign: "center",

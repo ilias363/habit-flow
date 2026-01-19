@@ -2,6 +2,7 @@
  * RecentActivity - List of recent log entries
  */
 
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { StyleSheet, View } from "react-native";
 
 import { ThemedText } from "@/components/themed-text";
@@ -58,9 +59,10 @@ export function RecentActivity({ logs, habits, limit = 8 }: RecentActivityProps)
           >
             <View style={[styles.dot, { backgroundColor: item.habit!.color }]} />
             <View style={styles.info}>
-              <ThemedText style={styles.name}>
-                {item.habit!.emoji} {item.habit!.name}
-              </ThemedText>
+              <View style={styles.nameRow}>
+                <MaterialIcons name={item.habit!.icon} size={16} color={item.habit!.color} />
+                <ThemedText style={styles.name}>{item.habit!.name}</ThemedText>
+              </View>
               <ThemedText style={[styles.time, { color: mutedColor }]}>
                 {formatTime(item.timestamp)}
               </ThemedText>
@@ -79,6 +81,7 @@ const styles = StyleSheet.create({
   item: { flexDirection: "row", alignItems: "center", padding: 12, gap: 12 },
   dot: { width: 8, height: 8, borderRadius: 4 },
   info: { flex: 1, flexDirection: "row", justifyContent: "space-between", alignItems: "center" },
+  nameRow: { flexDirection: "row", alignItems: "center", gap: 6 },
   name: { fontSize: 14 },
   time: { fontSize: 12 },
 });
