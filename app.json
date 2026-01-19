@@ -10,6 +10,7 @@
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
+      "bundleIdentifier": "com.ilias363.habitflow",
       "backgroundColor": "#FFFFFF",
       "icon": {
         "dark": "./assets/icons/ios-dark.png",
