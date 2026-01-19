@@ -112,11 +112,9 @@ export default function StatsScreen() {
                     <View style={styles.habitInfo}>
                       <ThemedText style={styles.habitName}>{habit.name}</ThemedText>
                       <ThemedText style={[styles.habitStats, { color: mutedColor }]}>
-                        {habit.totalLogs} total • {habit.currentStreak}🔥
+                        {habit.totalLogs} logs
+                        {habit.currentStreak > 0 && ` • ${habit.currentStreak}🔥`}
                       </ThemedText>
-                    </View>
-                    <View style={[styles.badge, { backgroundColor: habit.color }]}>
-                      <ThemedText style={styles.badgeText}>{habit.todayLogs}</ThemedText>
                     </View>
                   </View>
                   {isSelected && stats && (
@@ -196,14 +194,6 @@ const styles = StyleSheet.create({
   habitInfo: { flex: 1, gap: 2 },
   habitName: { fontSize: 16, fontWeight: "600" },
   habitStats: { fontSize: 13 },
-  badge: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  badgeText: { color: "#FFF", fontSize: 15, fontWeight: "600" },
   expanded: { padding: 14, borderTopWidth: 1 },
   statsRow: { flexDirection: "row", marginBottom: 10 },
   statBox: { flex: 1, alignItems: "center" },
