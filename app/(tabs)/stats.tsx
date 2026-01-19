@@ -203,7 +203,7 @@ const styles = StyleSheet.create({
   viewBtn: { paddingVertical: 12, borderRadius: 10, alignItems: "center" },
   viewBtnText: { color: "#FFF", fontSize: 14, fontWeight: "600" },
   empty: { alignItems: "center", paddingVertical: 60 },
-  emptyIcon: { fontSize: 48, marginBottom: 16 },
+  emptyIcon: { fontSize: 48, lineHeight: 64, marginBottom: 16 },
   emptyTitle: { fontSize: 18, fontWeight: "600", marginBottom: 8 },
   emptyText: { fontSize: 14 },
 });
