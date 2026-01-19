@@ -37,14 +37,18 @@ export default function StatsScreen() {
 
   const todayStart = new Date();
   todayStart.setHours(0, 0, 0, 0);
-  const todayLogs = allLogs.filter(l => l.timestamp >= todayStart.getTime()).length;
-  const bestStreak = Math.max(0, ...habits.map(h => h.currentStreak));
+  const weekStart = Date.now() - 7 * 24 * 60 * 60 * 1000;
+
+  const todayLogsCount = allLogs.filter(l => l.timestamp >= todayStart.getTime()).length;
+  const weeklyLogsCount = allLogs.filter(l => l.timestamp >= weekStart).length;
   const activeStreaks = habits.filter(h => h.currentStreak > 0).length;
+  const completionRate = habits.length > 0 ? Math.round((activeStreaks / habits.length) * 100) : 0;
+
   const globalStats = [
-    { value: todayLogs, label: "Today" },
-    { value: bestStreak, label: "Best Streak" },
-    { value: activeStreaks, label: "Active" },
-    { value: allLogs.length, label: "All Time" },
+    { value: todayLogsCount, label: "Today" },
+    { value: weeklyLogsCount, label: "This Week" },
+    { value: `${activeStreaks}/${habits.length}`, label: "Active" },
+    { value: `${completionRate}%`, label: "Rate" },
   ];
 
   const getHabitStats = (habit: HabitWithStats) => {
