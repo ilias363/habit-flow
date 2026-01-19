@@ -1,50 +1,98 @@
-# Welcome to your Expo app 👋
+# HabitFlow
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+A habit tracking app built with React Native and Expo. Track your daily habits, visualize your progress, and build lasting routines.
 
-## Get started
+## Features
 
-1. Install dependencies
+- **Track Habits** - Create and log habits with custom emojis and colors
+- **Detailed Statistics** - View your progress with charts and insights
+- **Streak Tracking** - Stay motivated with streak counters
+- **Historical Logs** - Log habits for past dates and view your history
+- **Backup & Restore** - Export and import your data as JSON
+- **Dark Mode** - Full support for light and dark themes
+
+## Getting Started
+
+### Prerequisites
+
+- Node.js 22+
+- pnpm 10+
+
+### Installation
+
+1. Clone the repository
 
    ```bash
-   npm install
+   git clone https://github.com/yourusername/habit-flow.git
+   cd habit-flow
    ```
 
-2. Start the app
+2. Install dependencies
 
    ```bash
-   npx expo start
+   pnpm install
    ```
 
-In the output, you'll find options to open the app in a
+3. Start the development server
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+   ```bash
+   pnpm start
+   ```
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+4. Run on your device
+   - Scan the QR code with Expo Go (Android/iOS)
+   - Press `a` for Android emulator
+   - Press `i` for iOS simulator
 
-## Get a fresh project
+## Building
 
-When you're ready, run:
+### Preview Build (Android)
 
 ```bash
-npm run reset-project
+eas build --profile preview --platform android
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+### Production Build
 
-## Learn more
+```bash
+eas build --profile production --platform android
+```
 
-To learn more about developing your project with Expo, look at the following resources:
+### OTA Updates
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+```bash
+eas update --branch preview --message "Your update message"
+```
 
-## Join the community
+## Tech Stack
 
-Join our community of developers creating universal apps.
+- **Framework**: [Expo](https://expo.dev/) (SDK 54)
+- **Navigation**: [Expo Router](https://docs.expo.dev/router/introduction/)
+- **Storage**: [AsyncStorage](https://react-native-async-storage.github.io/async-storage/)
+- **Language**: TypeScript
+- **Styling**: React Native StyleSheet
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+## Project Structure
+
+```
+habit-flow/
+├── app/                 # App screens (file-based routing)
+│   ├── (tabs)/          # Tab navigation screens
+│   └── habit/           # Habit detail screens
+├── components/          # Reusable UI components
+├── hooks/               # Custom React hooks
+├── lib/                 # Utility functions and storage
+├── constants/           # Theme and app constants
+├── types/               # TypeScript type definitions
+└── assets/              # Images and icons
+```
+
+## Scripts
+
+| Script           | Description                   |
+| ---------------- | ----------------------------- |
+| `pnpm start`     | Start Expo development server |
+| `pnpm android`   | Start on Android              |
+| `pnpm ios`       | Start on iOS                  |
+| `pnpm lint`      | Run ESLint                    |
+| `pnpm typecheck` | Run TypeScript type checking  |
