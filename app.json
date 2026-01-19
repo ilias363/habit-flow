@@ -26,7 +26,10 @@
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
       "backgroundColor": "#FFFFFF",
-      "package": "com.ilias363.habitflow"
+      "package": "com.ilias363.habitflow",
+      "runtimeVersion": {
+        "policy": "appVersion"
+      }
     },
     "web": {
       "output": "static",
@@ -57,6 +60,9 @@
       "eas": {
         "projectId": "708d5df2-936b-4b2b-b996-b1835e736887"
       }
+    },
+    "updates": {
+      "url": "https://u.expo.dev/708d5df2-936b-4b2b-b996-b1835e736887"
     }
   }
 }
