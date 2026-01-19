@@ -7,7 +7,7 @@ import * as DocumentPicker from "expo-document-picker";
 import { File, Paths } from "expo-file-system";
 import { useFocusEffect } from "expo-router";
 import * as Sharing from "expo-sharing";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { Alert, ScrollView, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -42,9 +42,11 @@ export default function SettingsScreen() {
     setStats({ habitCount: habits.length, logCount: logs.length });
   };
 
-  useFocusEffect(() => {
-    loadStats();
-  });
+  useFocusEffect(
+    useCallback(() => {
+      loadStats();
+    }, []),
+  );
 
   const handleExport = async () => {
     try {

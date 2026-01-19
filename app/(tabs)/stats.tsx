@@ -4,7 +4,7 @@
 
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { useFocusEffect, useRouter } from "expo-router";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { Pressable, ScrollView, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -31,10 +31,12 @@ export default function StatsScreen() {
   const mutedColor = useThemeColor({}, "muted");
   const tintColor = useThemeColor({}, "tint");
 
-  useFocusEffect(() => {
-    refreshHabits();
-    getLogs().then(setAllLogs);
-  });
+  useFocusEffect(
+    useCallback(() => {
+      refreshHabits();
+      getLogs().then(setAllLogs);
+    }, [refreshHabits]),
+  );
 
   const todayStart = new Date();
   todayStart.setHours(0, 0, 0, 0);
