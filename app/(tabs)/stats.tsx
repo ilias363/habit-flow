@@ -16,7 +16,7 @@ import { ThemedView } from "@/components/themed-view";
 import { WeekdayChart } from "@/components/weekday-chart";
 import { useHabits } from "@/hooks/use-habits";
 import { useThemeColor } from "@/hooks/use-theme-color";
-import { getLogs } from "@/lib/storage";
+import { formatRelativeTime, getLogs } from "@/lib";
 import { HabitLog, HabitWithStats } from "@/types";
 
 export default function StatsScreen() {
@@ -61,16 +61,6 @@ export default function StatsScreen() {
     const daysSince = Math.max(1, Math.floor((Date.now() - oldestLogDate) / 86400000));
     const avgPerDay = (habit.totalLogs / daysSince).toFixed(1);
     return { weeklyLogs, avgPerDay, daysSince };
-  };
-
-  const formatTime = (timestamp: number) => {
-    const diff = Date.now() - timestamp;
-    const hours = Math.floor(diff / 3600000);
-    const days = Math.floor(diff / 86400000);
-    if (hours < 1) return "Just now";
-    if (hours < 24) return `${hours}h ago`;
-    if (days === 1) return "Yesterday";
-    return `${days}d ago`;
   };
 
   return (
@@ -149,7 +139,7 @@ export default function StatsScreen() {
                       </View>
                       {habit.lastLogDate && (
                         <ThemedText style={[styles.lastLog, { color: mutedColor }]}>
-                          Last: {formatTime(habit.lastLogDate)}
+                          Last: {formatRelativeTime(habit.lastLogDate)}
                         </ThemedText>
                       )}
                       <Pressable

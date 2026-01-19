@@ -7,6 +7,7 @@ import { StyleSheet, View } from "react-native";
 
 import { ThemedText } from "@/components/themed-text";
 import { useThemeColor } from "@/hooks/use-theme-color";
+import { formatRelativeTime } from "@/lib";
 import { HabitLog, HabitWithStats } from "@/types";
 
 interface RecentActivityProps {
@@ -25,18 +26,6 @@ export function RecentActivity({ logs, habits, limit = 8 }: RecentActivityProps)
     .slice(0, limit)
     .map(log => ({ ...log, habit: habits.find(h => h.id === log.habitId) }))
     .filter(item => item.habit);
-
-  const formatTime = (timestamp: number) => {
-    const diff = Date.now() - timestamp;
-    const minutes = Math.floor(diff / (1000 * 60));
-    const hours = Math.floor(diff / (1000 * 60 * 60));
-    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-    if (minutes < 1) return "Just now";
-    if (minutes < 60) return `${minutes}m ago`;
-    if (hours < 24) return `${hours}h ago`;
-    if (days === 1) return "Yesterday";
-    return `${days}d ago`;
-  };
 
   if (recentItems.length === 0) return null;
 
@@ -64,7 +53,7 @@ export function RecentActivity({ logs, habits, limit = 8 }: RecentActivityProps)
                 <ThemedText style={styles.name}>{item.habit!.name}</ThemedText>
               </View>
               <ThemedText style={[styles.time, { color: mutedColor }]}>
-                {formatTime(item.timestamp)}
+                {formatRelativeTime(item.timestamp)}
               </ThemedText>
             </View>
           </View>
