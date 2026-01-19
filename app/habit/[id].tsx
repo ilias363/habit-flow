@@ -326,6 +326,9 @@ export default function HabitDetailScreen() {
             keyExtractor={item => item.id}
             contentContainerStyle={styles.logsList}
             showsVerticalScrollIndicator={false}
+            maxToRenderPerBatch={15}
+            windowSize={10}
+            initialNumToRender={15}
           />
         )}
       </View>

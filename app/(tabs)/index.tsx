@@ -92,6 +92,9 @@ export default function HomeScreen() {
           keyExtractor={item => item.id}
           contentContainerStyle={styles.list}
           showsVerticalScrollIndicator={false}
+          maxToRenderPerBatch={10}
+          windowSize={10}
+          initialNumToRender={10}
           refreshControl={
             <RefreshControl
               refreshing={refreshing}
