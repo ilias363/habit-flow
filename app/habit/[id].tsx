@@ -59,13 +59,11 @@ export default function HabitDetailScreen() {
     loadHabit().finally(() => setLoading(false));
   }, [loadHabit]);
 
-  useFocusEffect(
-    useCallback(() => {
-      // Refresh both habit and logs when screen comes into focus
-      loadHabit();
-      refreshLogs();
-    }, [loadHabit, refreshLogs]),
-  );
+  useFocusEffect(() => {
+    // Refresh both habit and logs when screen comes into focus
+    loadHabit();
+    refreshLogs();
+  });
 
   const handleBack = () => {
     router.back();

@@ -3,7 +3,7 @@
  */
 
 import { useFocusEffect, useRouter } from "expo-router";
-import { useCallback, useMemo, useState } from "react";
+import { useState } from "react";
 import { Pressable, ScrollView, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -30,26 +30,22 @@ export default function StatsScreen() {
   const mutedColor = useThemeColor({}, "muted");
   const tintColor = useThemeColor({}, "tint");
 
-  useFocusEffect(
-    useCallback(() => {
-      refreshHabits();
-      getLogs().then(setAllLogs);
-    }, [refreshHabits]),
-  );
+  useFocusEffect(() => {
+    refreshHabits();
+    getLogs().then(setAllLogs);
+  });
 
-  const globalStats = useMemo(() => {
-    const todayStart = new Date();
-    todayStart.setHours(0, 0, 0, 0);
-    const todayLogs = allLogs.filter(l => l.timestamp >= todayStart.getTime()).length;
-    const bestStreak = Math.max(0, ...habits.map(h => h.currentStreak));
-    const activeStreaks = habits.filter(h => h.currentStreak > 0).length;
-    return [
-      { value: todayLogs, label: "Today" },
-      { value: bestStreak, label: "Best Streak" },
-      { value: activeStreaks, label: "Active" },
-      { value: allLogs.length, label: "All Time" },
-    ];
-  }, [habits, allLogs]);
+  const todayStart = new Date();
+  todayStart.setHours(0, 0, 0, 0);
+  const todayLogs = allLogs.filter(l => l.timestamp >= todayStart.getTime()).length;
+  const bestStreak = Math.max(0, ...habits.map(h => h.currentStreak));
+  const activeStreaks = habits.filter(h => h.currentStreak > 0).length;
+  const globalStats = [
+    { value: todayLogs, label: "Today" },
+    { value: bestStreak, label: "Best Streak" },
+    { value: activeStreaks, label: "Active" },
+    { value: allLogs.length, label: "All Time" },
+  ];
 
   const getHabitStats = (habit: HabitWithStats) => {
     const habitLogs = allLogs.filter(l => l.habitId === habit.id);

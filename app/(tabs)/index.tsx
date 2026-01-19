@@ -3,7 +3,7 @@
  */
 
 import { useFocusEffect, useRouter } from "expo-router";
-import { useCallback, useState } from "react";
+import { useState } from "react";
 import { ActivityIndicator, FlatList, RefreshControl, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -25,11 +25,9 @@ export default function HomeScreen() {
   const tintColor = useThemeColor({}, "tint");
 
   // Refresh habits when screen comes into focus
-  useFocusEffect(
-    useCallback(() => {
-      refreshHabits();
-    }, [refreshHabits]),
-  );
+  useFocusEffect(() => {
+    refreshHabits();
+  });
 
   const handleRefresh = async () => {
     setRefreshing(true);

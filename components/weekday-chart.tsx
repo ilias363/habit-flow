@@ -2,7 +2,6 @@
  * WeekdayChart - Aggregated activity per day of week across all time
  */
 
-import { useMemo } from "react";
 import { StyleSheet, View } from "react-native";
 
 import { ThemedText } from "@/components/themed-text";
@@ -23,14 +22,12 @@ export function WeekdayChart({ logs }: WeekdayChartProps) {
 
   const today = new Date().getDay();
 
-  const weekdayData = useMemo(() => {
-    const counts = [0, 0, 0, 0, 0, 0, 0];
-    logs.forEach(log => {
-      const day = new Date(log.timestamp).getDay();
-      counts[day]++;
-    });
-    return DAY_NAMES.map((name, i) => ({ name, count: counts[i], isToday: i === today }));
-  }, [logs, today]);
+  const counts = [0, 0, 0, 0, 0, 0, 0];
+  logs.forEach(log => {
+    const day = new Date(log.timestamp).getDay();
+    counts[day]++;
+  });
+  const weekdayData = DAY_NAMES.map((name, i) => ({ name, count: counts[i], isToday: i === today }));
 
   const maxCount = Math.max(1, ...weekdayData.map(d => d.count));
 

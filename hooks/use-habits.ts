@@ -76,44 +76,38 @@ export function useHabits(): UseHabitsReturn {
     refreshHabits();
   }, [refreshHabits]);
 
-  const createHabit = useCallback(
-    async (habit: Omit<Habit, "id" | "createdAt" | "updatedAt">): Promise<Habit> => {
-      const newHabit = await createHabitStorage(habit);
-      await refreshHabits();
-      return newHabit;
-    },
-    [refreshHabits],
-  );
+  const createHabit = async (
+    habit: Omit<Habit, "id" | "createdAt" | "updatedAt">,
+  ): Promise<Habit> => {
+    const newHabit = await createHabitStorage(habit);
+    await refreshHabits();
+    return newHabit;
+  };
 
-  const updateHabit = useCallback(
-    async (
-      id: string,
-      updates: Partial<Omit<Habit, "id" | "createdAt">>,
-    ): Promise<Habit | null> => {
-      const updated = await updateHabitStorage(id, updates);
-      await refreshHabits();
-      return updated;
-    },
-    [refreshHabits],
-  );
+  const updateHabit = async (
+    id: string,
+    updates: Partial<Omit<Habit, "id" | "createdAt">>,
+  ): Promise<Habit | null> => {
+    const updated = await updateHabitStorage(id, updates);
+    await refreshHabits();
+    return updated;
+  };
 
-  const deleteHabit = useCallback(
-    async (id: string): Promise<boolean> => {
-      const result = await deleteHabitStorage(id);
-      await refreshHabits();
-      return result;
-    },
-    [refreshHabits],
-  );
+  const deleteHabit = async (id: string): Promise<boolean> => {
+    const result = await deleteHabitStorage(id);
+    await refreshHabits();
+    return result;
+  };
 
-  const logHabit = useCallback(
-    async (habitId: string, note?: string, customTimestamp?: number): Promise<HabitLog> => {
-      const newLog = await createLogStorage(habitId, note, customTimestamp);
-      await refreshHabits();
-      return newLog;
-    },
-    [refreshHabits],
-  );
+  const logHabit = async (
+    habitId: string,
+    note?: string,
+    customTimestamp?: number,
+  ): Promise<HabitLog> => {
+    const newLog = await createLogStorage(habitId, note, customTimestamp);
+    await refreshHabits();
+    return newLog;
+  };
 
   return {
     habits,
@@ -157,14 +151,11 @@ export function useHabitLogs(habitId: string): UseHabitLogsReturn {
     refreshLogs();
   }, [refreshLogs]);
 
-  const deleteLog = useCallback(
-    async (logId: string): Promise<boolean> => {
-      const result = await deleteLogStorage(logId);
-      await refreshLogs();
-      return result;
-    },
-    [refreshLogs],
-  );
+  const deleteLog = async (logId: string): Promise<boolean> => {
+    const result = await deleteLogStorage(logId);
+    await refreshLogs();
+    return result;
+  };
 
   return {
     logs,

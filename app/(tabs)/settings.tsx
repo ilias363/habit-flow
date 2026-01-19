@@ -6,7 +6,7 @@ import * as DocumentPicker from "expo-document-picker";
 import { File, Paths } from "expo-file-system";
 import { useFocusEffect } from "expo-router";
 import * as Sharing from "expo-sharing";
-import { useCallback, useState } from "react";
+import { useState } from "react";
 import { Alert, ScrollView, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -36,16 +36,14 @@ export default function SettingsScreen() {
   const borderColor = useThemeColor({}, "cardBorder");
   const mutedColor = useThemeColor({}, "muted");
 
-  const loadStats = useCallback(async () => {
+  const loadStats = async () => {
     const [habits, logs] = await Promise.all([getHabits(), getLogs()]);
     setStats({ habitCount: habits.length, logCount: logs.length });
-  }, []);
+  };
 
-  useFocusEffect(
-    useCallback(() => {
-      loadStats();
-    }, [loadStats]),
-  );
+  useFocusEffect(() => {
+    loadStats();
+  });
 
   const handleExport = async () => {
     try {

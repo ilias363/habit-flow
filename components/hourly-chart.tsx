@@ -2,7 +2,6 @@
  * HourlyChart - Aggregated activity per hour of day across all time
  */
 
-import { useMemo } from "react";
 import { StyleSheet, View } from "react-native";
 
 import { ThemedText } from "@/components/themed-text";
@@ -22,27 +21,25 @@ export function HourlyChart({ logs }: HourlyChartProps) {
   const currentHour = new Date().getHours();
 
   // Group into 4-hour intervals: 0-3, 4-7, 8-11, 12-15, 16-19, 20-23
-  const hourlyData = useMemo(() => {
-    const intervals = [
-      { label: "12-4am", start: 0, end: 4, count: 0 },
-      { label: "4-8am", start: 4, end: 8, count: 0 },
-      { label: "8-12pm", start: 8, end: 12, count: 0 },
-      { label: "12-4pm", start: 12, end: 16, count: 0 },
-      { label: "4-8pm", start: 16, end: 20, count: 0 },
-      { label: "8-12am", start: 20, end: 24, count: 0 },
-    ];
+  const intervals = [
+    { label: "12-4am", start: 0, end: 4, count: 0 },
+    { label: "4-8am", start: 4, end: 8, count: 0 },
+    { label: "8-12pm", start: 8, end: 12, count: 0 },
+    { label: "12-4pm", start: 12, end: 16, count: 0 },
+    { label: "4-8pm", start: 16, end: 20, count: 0 },
+    { label: "8-12am", start: 20, end: 24, count: 0 },
+  ];
 
-    logs.forEach(log => {
-      const hour = new Date(log.timestamp).getHours();
-      const interval = intervals.find(i => hour >= i.start && hour < i.end);
-      if (interval) interval.count++;
-    });
+  logs.forEach(log => {
+    const hour = new Date(log.timestamp).getHours();
+    const interval = intervals.find(i => hour >= i.start && hour < i.end);
+    if (interval) interval.count++;
+  });
 
-    return intervals.map(i => ({
-      ...i,
-      isCurrent: currentHour >= i.start && currentHour < i.end,
-    }));
-  }, [logs, currentHour]);
+  const hourlyData = intervals.map(i => ({
+    ...i,
+    isCurrent: currentHour >= i.start && currentHour < i.end,
+  }));
 
   const maxCount = Math.max(1, ...hourlyData.map(d => d.count));
 
