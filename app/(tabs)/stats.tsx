@@ -51,7 +51,9 @@ export default function StatsScreen() {
     const habitLogs = allLogs.filter(l => l.habitId === habit.id);
     const weekStart = Date.now() - 7 * 24 * 60 * 60 * 1000;
     const weeklyLogs = habitLogs.filter(l => l.timestamp >= weekStart).length;
-    const daysSince = Math.max(1, Math.floor((Date.now() - habit.createdAt) / 86400000));
+    const oldestLogDate =
+      habitLogs.length > 0 ? Math.min(...habitLogs.map(l => l.timestamp)) : Date.now();
+    const daysSince = Math.max(1, Math.floor((Date.now() - oldestLogDate) / 86400000));
     const avgPerDay = (habit.totalLogs / daysSince).toFixed(1);
     return { weeklyLogs, avgPerDay, daysSince };
   };
