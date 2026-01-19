@@ -42,14 +42,12 @@ export default function StatsScreen() {
 
   const todayLogsCount = allLogs.filter(l => l.timestamp >= todayStart.getTime()).length;
   const weeklyLogsCount = allLogs.filter(l => l.timestamp >= weekStart).length;
-  const activeStreaks = habits.filter(h => h.currentStreak > 0).length;
-  const completionRate = habits.length > 0 ? Math.round((activeStreaks / habits.length) * 100) : 0;
+  const totalLogs = allLogs.length;
 
   const globalStats = [
     { value: todayLogsCount, label: "Today" },
     { value: weeklyLogsCount, label: "This Week" },
-    { value: `${activeStreaks}/${habits.length}`, label: "Active" },
-    { value: `${completionRate}%`, label: "Rate" },
+    { value: totalLogs, label: "Total Logs" },
   ];
 
   const getHabitStats = (habit: HabitWithStats) => {
@@ -117,6 +115,11 @@ export default function StatsScreen() {
                         {habit.currentStreak > 0 && ` • ${habit.currentStreak}🔥`}
                       </ThemedText>
                     </View>
+                    <MaterialIcons
+                      name={isSelected ? "expand-less" : "expand-more"}
+                      size={24}
+                      color={mutedColor}
+                    />
                   </View>
                   {isSelected && stats && (
                     <View style={[styles.expanded, { borderTopColor: borderColor }]}>
