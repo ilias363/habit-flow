@@ -2,6 +2,7 @@
  * Settings screen - Export, import, and data management
  */
 
+import Constants from "expo-constants";
 import * as DocumentPicker from "expo-document-picker";
 import { File, Paths } from "expo-file-system";
 import { useFocusEffect } from "expo-router";
@@ -256,7 +257,9 @@ export default function SettingsScreen() {
           </ThemedText>
         </View>
 
-        <ThemedText style={[styles.version, { color: mutedColor }]}>Habit Flow v1.0.0</ThemedText>
+        <ThemedText style={[styles.version, { color: mutedColor }]}>
+          Habit Flow v{Constants.expoConfig?.version ?? "1.0.0"}
+        </ThemedText>
       </ScrollView>
     </ThemedView>
   );
