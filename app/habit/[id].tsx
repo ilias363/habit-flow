@@ -193,14 +193,6 @@ export default function HabitDetailScreen() {
     <LogEntry log={item} color={habit?.color || "#6366F1"} onDelete={() => handleDeleteLog(item)} />
   );
 
-  if (loading) {
-    return (
-      <ThemedView style={styles.loadingContainer}>
-        <ActivityIndicator size="large" />
-      </ThemedView>
-    );
-  }
-
   if (!habit) {
     return (
       <ThemedView style={styles.container}>
@@ -210,11 +202,17 @@ export default function HabitDetailScreen() {
             <ThemedText style={[styles.backText, { color: tintColor }]}>Back</ThemedText>
           </Pressable>
         </View>
-        <EmptyState
-          icon="❌"
-          title="Habit not found"
-          description="This habit may have been deleted"
-        />
+        {loading ? (
+          <View style={styles.loadingContent}>
+            <ActivityIndicator size="large" />
+          </View>
+        ) : (
+          <EmptyState
+            icon="❌"
+            title="Habit not found"
+            description="This habit may have been deleted"
+          />
+        )}
       </ThemedView>
     );
   }
@@ -339,7 +337,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  loadingContainer: {
+  loadingContent: {
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
