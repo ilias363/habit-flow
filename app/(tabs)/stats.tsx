@@ -34,7 +34,7 @@ export default function StatsScreen() {
   useFocusEffect(
     useCallback(() => {
       refreshHabits();
-      getLogs().then(setAllLogs);
+      setAllLogs(getLogs());
     }, [refreshHabits]),
   );
 

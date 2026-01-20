@@ -1,12 +1,15 @@
 /**
- * Storage layer for habit data persistence using AsyncStorage
+ * Storage layer for habit data persistence using MMKV (30x faster than AsyncStorage)
  */
 
 import { Habit, HabitLog } from "@/types";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { createMMKV } from "react-native-mmkv";
 
-const HABITS_KEY = "@habit_flow:habits";
-const LOGS_KEY = "@habit_flow:logs";
+// Initialize MMKV storage
+const storage = createMMKV({ id: "habit-flow-storage" });
+
+const HABITS_KEY = "habits";
+const LOGS_KEY = "logs";
 
 // Generate unique ID
 export function generateId(): string {
@@ -15,9 +18,9 @@ export function generateId(): string {
 
 // ============ HABITS ============
 
-export async function getHabits(): Promise<Habit[]> {
+export function getHabits(): Habit[] {
   try {
-    const data = await AsyncStorage.getItem(HABITS_KEY);
+    const data = storage.getString(HABITS_KEY);
     return data ? JSON.parse(data) : [];
   } catch (error) {
     console.error("Error reading habits:", error);
@@ -25,19 +28,12 @@ export async function getHabits(): Promise<Habit[]> {
   }
 }
 
-export async function saveHabits(habits: Habit[]): Promise<void> {
-  try {
-    await AsyncStorage.setItem(HABITS_KEY, JSON.stringify(habits));
-  } catch (error) {
-    console.error("Error saving habits:", error);
-    throw error;
-  }
+export function saveHabits(habits: Habit[]): void {
+  storage.set(HABITS_KEY, JSON.stringify(habits));
 }
 
-export async function createHabit(
-  habit: Omit<Habit, "id" | "createdAt" | "updatedAt">,
-): Promise<Habit> {
-  const habits = await getHabits();
+export function createHabit(habit: Omit<Habit, "id" | "createdAt" | "updatedAt">): Habit {
+  const habits = getHabits();
   const now = Date.now();
   const newHabit: Habit = {
     ...habit,
@@ -46,15 +42,15 @@ export async function createHabit(
     updatedAt: now,
   };
   habits.push(newHabit);
-  await saveHabits(habits);
+  saveHabits(habits);
   return newHabit;
 }
 
-export async function updateHabit(
+export function updateHabit(
   id: string,
   updates: Partial<Omit<Habit, "id" | "createdAt">>,
-): Promise<Habit | null> {
-  const habits = await getHabits();
+): Habit | null {
+  const habits = getHabits();
   const index = habits.findIndex(h => h.id === id);
   if (index === -1) return null;
 
@@ -63,28 +59,28 @@ export async function updateHabit(
     ...updates,
     updatedAt: Date.now(),
   };
-  await saveHabits(habits);
+  saveHabits(habits);
   return habits[index];
 }
 
-export async function deleteHabit(id: string): Promise<boolean> {
-  const habits = await getHabits();
+export function deleteHabit(id: string): boolean {
+  const habits = getHabits();
   const filtered = habits.filter(h => h.id !== id);
   if (filtered.length === habits.length) return false;
 
-  await saveHabits(filtered);
+  saveHabits(filtered);
   // Also delete all logs for this habit
-  const logs = await getLogs();
+  const logs = getLogs();
   const filteredLogs = logs.filter(l => l.habitId !== id);
-  await saveLogs(filteredLogs);
+  saveLogs(filteredLogs);
   return true;
 }
 
 // ============ LOGS ============
 
-export async function getLogs(): Promise<HabitLog[]> {
+export function getLogs(): HabitLog[] {
   try {
-    const data = await AsyncStorage.getItem(LOGS_KEY);
+    const data = storage.getString(LOGS_KEY);
     return data ? JSON.parse(data) : [];
   } catch (error) {
     console.error("Error reading logs:", error);
@@ -92,26 +88,17 @@ export async function getLogs(): Promise<HabitLog[]> {
   }
 }
 
-export async function saveLogs(logs: HabitLog[]): Promise<void> {
-  try {
-    await AsyncStorage.setItem(LOGS_KEY, JSON.stringify(logs));
-  } catch (error) {
-    console.error("Error saving logs:", error);
-    throw error;
-  }
+export function saveLogs(logs: HabitLog[]): void {
+  storage.set(LOGS_KEY, JSON.stringify(logs));
 }
 
-export async function getLogsForHabit(habitId: string): Promise<HabitLog[]> {
-  const logs = await getLogs();
-  return logs.filter(l => l.habitId === habitId).sort((a, b) => b.timestamp - a.timestamp); // Most recent first
+export function getLogsForHabit(habitId: string): HabitLog[] {
+  const logs = getLogs();
+  return logs.filter(l => l.habitId === habitId).sort((a, b) => b.timestamp - a.timestamp);
 }
 
-export async function createLog(
-  habitId: string,
-  note?: string,
-  customTimestamp?: number,
-): Promise<HabitLog> {
-  const logs = await getLogs();
+export function createLog(habitId: string, note?: string, customTimestamp?: number): HabitLog {
+  const logs = getLogs();
   const newLog: HabitLog = {
     id: generateId(),
     habitId,
@@ -119,16 +106,16 @@ export async function createLog(
     note,
   };
   logs.push(newLog);
-  await saveLogs(logs);
+  saveLogs(logs);
   return newLog;
 }
 
-export async function deleteLog(logId: string): Promise<boolean> {
-  const logs = await getLogs();
+export function deleteLog(logId: string): boolean {
+  const logs = getLogs();
   const filtered = logs.filter(l => l.id !== logId);
   if (filtered.length === logs.length) return false;
 
-  await saveLogs(filtered);
+  saveLogs(filtered);
   return true;
 }
 
@@ -175,6 +162,6 @@ export function calculateStreak(logs: HabitLog[]): number {
   return streak;
 }
 
-export async function clearAllData(): Promise<void> {
-  await AsyncStorage.multiRemove([HABITS_KEY, LOGS_KEY]);
+export function clearAllData(): void {
+  storage.clearAll();
 }

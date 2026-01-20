@@ -1,5 +1,5 @@
 /**
- * Custom hook for managing habits with local storage
+ * Custom hook for managing habits with MMKV storage
  */
 
 import {
@@ -21,14 +21,11 @@ interface UseHabitsReturn {
   habits: HabitWithStats[];
   loading: boolean;
   error: string | null;
-  refreshHabits: () => Promise<void>;
-  createHabit: (habit: Omit<Habit, "id" | "createdAt" | "updatedAt">) => Promise<Habit>;
-  updateHabit: (
-    id: string,
-    updates: Partial<Omit<Habit, "id" | "createdAt">>,
-  ) => Promise<Habit | null>;
-  deleteHabit: (id: string) => Promise<boolean>;
-  logHabit: (habitId: string, note?: string, customTimestamp?: number) => Promise<HabitLog>;
+  refreshHabits: () => void;
+  createHabit: (habit: Omit<Habit, "id" | "createdAt" | "updatedAt">) => Habit;
+  updateHabit: (id: string, updates: Partial<Omit<Habit, "id" | "createdAt">>) => Habit | null;
+  deleteHabit: (id: string) => boolean;
+  logHabit: (habitId: string, note?: string, customTimestamp?: number) => HabitLog;
 }
 
 export function useHabits(): UseHabitsReturn {
@@ -36,32 +33,28 @@ export function useHabits(): UseHabitsReturn {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const computeHabitStats = useCallback(
-    async (habit: Habit, allLogs: HabitLog[]): Promise<HabitWithStats> => {
-      const habitLogs = allLogs.filter(l => l.habitId === habit.id);
-      const today = Date.now();
-      const todayLogs = habitLogs.filter(l => isSameDay(l.timestamp, today)).length;
-      const sortedLogs = [...habitLogs].sort((a, b) => b.timestamp - a.timestamp);
+  const computeHabitStats = useCallback((habit: Habit, allLogs: HabitLog[]): HabitWithStats => {
+    const habitLogs = allLogs.filter(l => l.habitId === habit.id);
+    const today = Date.now();
+    const todayLogs = habitLogs.filter(l => isSameDay(l.timestamp, today)).length;
+    const sortedLogs = [...habitLogs].sort((a, b) => b.timestamp - a.timestamp);
 
-      return {
-        ...habit,
-        totalLogs: habitLogs.length,
-        todayLogs,
-        currentStreak: calculateStreak(habitLogs),
-        lastLogDate: sortedLogs.length > 0 ? sortedLogs[0].timestamp : null,
-      };
-    },
-    [],
-  );
+    return {
+      ...habit,
+      totalLogs: habitLogs.length,
+      todayLogs,
+      currentStreak: calculateStreak(habitLogs),
+      lastLogDate: sortedLogs.length > 0 ? sortedLogs[0].timestamp : null,
+    };
+  }, []);
 
-  const refreshHabits = useCallback(async () => {
+  const refreshHabits = useCallback(() => {
     try {
       setLoading(true);
       setError(null);
-      const [habitsData, logsData] = await Promise.all([getHabits(), getLogs()]);
-      const habitsWithStats = await Promise.all(
-        habitsData.map(h => computeHabitStats(h, logsData)),
-      );
+      const habitsData = getHabits();
+      const logsData = getLogs();
+      const habitsWithStats = habitsData.map(h => computeHabitStats(h, logsData));
       // Sort by most recently updated
       habitsWithStats.sort((a, b) => b.updatedAt - a.updatedAt);
       setHabits(habitsWithStats);
@@ -76,36 +69,30 @@ export function useHabits(): UseHabitsReturn {
     refreshHabits();
   }, [refreshHabits]);
 
-  const createHabit = async (
-    habit: Omit<Habit, "id" | "createdAt" | "updatedAt">,
-  ): Promise<Habit> => {
-    const newHabit = await createHabitStorage(habit);
-    await refreshHabits();
+  const createHabit = (habit: Omit<Habit, "id" | "createdAt" | "updatedAt">): Habit => {
+    const newHabit = createHabitStorage(habit);
+    refreshHabits();
     return newHabit;
   };
 
-  const updateHabit = async (
+  const updateHabit = (
     id: string,
     updates: Partial<Omit<Habit, "id" | "createdAt">>,
-  ): Promise<Habit | null> => {
-    const updated = await updateHabitStorage(id, updates);
-    await refreshHabits();
+  ): Habit | null => {
+    const updated = updateHabitStorage(id, updates);
+    refreshHabits();
     return updated;
   };
 
-  const deleteHabit = async (id: string): Promise<boolean> => {
-    const result = await deleteHabitStorage(id);
-    await refreshHabits();
+  const deleteHabit = (id: string): boolean => {
+    const result = deleteHabitStorage(id);
+    refreshHabits();
     return result;
   };
 
-  const logHabit = async (
-    habitId: string,
-    note?: string,
-    customTimestamp?: number,
-  ): Promise<HabitLog> => {
-    const newLog = await createLogStorage(habitId, note, customTimestamp);
-    await refreshHabits();
+  const logHabit = (habitId: string, note?: string, customTimestamp?: number): HabitLog => {
+    const newLog = createLogStorage(habitId, note, customTimestamp);
+    refreshHabits();
     return newLog;
   };
 
@@ -125,8 +112,8 @@ interface UseHabitLogsReturn {
   logs: HabitLog[];
   loading: boolean;
   error: string | null;
-  refreshLogs: () => Promise<void>;
-  deleteLog: (logId: string) => Promise<boolean>;
+  refreshLogs: () => void;
+  deleteLog: (logId: string) => boolean;
 }
 
 export function useHabitLogs(habitId: string): UseHabitLogsReturn {
@@ -134,11 +121,11 @@ export function useHabitLogs(habitId: string): UseHabitLogsReturn {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const refreshLogs = useCallback(async () => {
+  const refreshLogs = useCallback(() => {
     try {
       setLoading(true);
       setError(null);
-      const logsData = await getLogsForHabit(habitId);
+      const logsData = getLogsForHabit(habitId);
       setLogs(logsData);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to load logs");
@@ -151,9 +138,9 @@ export function useHabitLogs(habitId: string): UseHabitLogsReturn {
     refreshLogs();
   }, [refreshLogs]);
 
-  const deleteLog = async (logId: string): Promise<boolean> => {
-    const result = await deleteLogStorage(logId);
-    await refreshLogs();
+  const deleteLog = (logId: string): boolean => {
+    const result = deleteLogStorage(logId);
+    refreshLogs();
     return result;
   };
 

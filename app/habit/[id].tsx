@@ -77,8 +77,8 @@ export default function HabitDetailScreen() {
   const handleLogNow = async () => {
     if (!habit) return;
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    await logHabit(habit.id);
-    await refreshLogs();
+    logHabit(habit.id);
+    refreshLogs();
   };
 
   const handleLogCustomDate = async () => {
