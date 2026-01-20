@@ -62,8 +62,8 @@ export default function RootLayout() {
         <Stack.Screen
           name="habit/[id]"
           options={{
-            animation: "fade",
-            animationDuration: 100,
+            presentation: "modal",
+            animation: "slide_from_right",
           }}
         />
         <Stack.Screen
