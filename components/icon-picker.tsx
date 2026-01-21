@@ -1,12 +1,13 @@
 /**
- * IconPicker - Grid of icon options for habit customization
+ * IconPicker - Glassmorphism icon selection grid
  */
 
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import * as Haptics from "expo-haptics";
 import { Pressable, StyleSheet, View } from "react-native";
 
-import { useThemeColor } from "@/hooks/use-theme-color";
+import { Colors, GlassStyles } from "@/constants/theme";
+import { useColorScheme } from "@/hooks/use-color-scheme";
 import { HABIT_ICONS, IconName } from "@/types";
 
 interface IconPickerProps {
@@ -20,15 +21,14 @@ function IconOption({
   isSelected,
   onPress,
   accentColor,
+  colors,
 }: {
   icon: IconName;
   isSelected: boolean;
   onPress: () => void;
   accentColor: string;
+  colors: typeof Colors.light;
 }) {
-  const cardBorder = useThemeColor({}, "cardBorder");
-  const mutedColor = useThemeColor({}, "muted");
-
   const handlePress = () => {
     Haptics.selectionAsync();
     onPress();
@@ -42,19 +42,23 @@ function IconOption({
       <View
         style={[
           styles.iconCircle,
-          { borderColor: isSelected ? accentColor : cardBorder },
-          isSelected && { borderColor: accentColor, backgroundColor: accentColor + "15" },
+          {
+            borderColor: isSelected ? accentColor : colors.glassBorder,
+            backgroundColor: isSelected ? accentColor + "20" : colors.glass,
+          },
+          isSelected && styles.selected,
         ]}
       >
-        <MaterialIcons name={icon} size={24} color={isSelected ? accentColor : mutedColor} />
+        <MaterialIcons name={icon} size={24} color={isSelected ? accentColor : colors.muted} />
       </View>
     </Pressable>
   );
 }
 
 export function IconPicker({ selectedIcon, onSelect, color }: IconPickerProps) {
-  const tintColor = useThemeColor({}, "tint");
-  const accentColor = color || tintColor;
+  const colorScheme = useColorScheme() ?? "light";
+  const colors = Colors[colorScheme];
+  const accentColor = color || colors.primary;
 
   return (
     <View style={styles.container}>
@@ -65,6 +69,7 @@ export function IconPicker({ selectedIcon, onSelect, color }: IconPickerProps) {
           isSelected={selectedIcon === icon}
           onPress={() => onSelect(icon)}
           accentColor={accentColor}
+          colors={colors}
         />
       ))}
     </View>
@@ -75,9 +80,9 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
     flexWrap: "wrap",
-    gap: 8,
+    gap: GlassStyles.spacing.sm,
     justifyContent: "center",
-    paddingVertical: 8,
+    paddingVertical: GlassStyles.spacing.sm,
   },
   iconOption: {
     padding: 2,
@@ -85,9 +90,10 @@ const styles = StyleSheet.create({
   iconCircle: {
     width: 48,
     height: 48,
-    borderRadius: 12,
-    borderWidth: 2,
+    borderRadius: GlassStyles.borderRadius.md,
+    borderWidth: 1.5,
     alignItems: "center",
     justifyContent: "center",
   },
+  selected: {},
 });

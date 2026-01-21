@@ -1,5 +1,5 @@
 /**
- * Habit Detail Screen - View habit details and logs
+ * Habit Detail Screen - Glassmorphism habit details and logs
  */
 
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
@@ -8,6 +8,7 @@ import DateTimePicker, {
   DateTimePickerEvent,
 } from "@react-native-community/datetimepicker";
 import * as Haptics from "expo-haptics";
+import { LinearGradient } from "expo-linear-gradient";
 import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
 import {
@@ -25,9 +26,11 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { EmptyState } from "@/components/empty-state";
 import { LogEntry } from "@/components/log-entry";
 import { ThemedText } from "@/components/themed-text";
-import { ThemedView } from "@/components/themed-view";
+import { GlassCard } from "@/components/ui/glass-card";
+import { GradientBackground } from "@/components/ui/gradient-background";
+import { Colors, GlassStyles, Typography } from "@/constants/theme";
+import { useColorScheme } from "@/hooks/use-color-scheme";
 import { useHabitLogs, useHabits } from "@/hooks/use-habits";
-import { useThemeColor } from "@/hooks/use-theme-color";
 import { getHabits } from "@/lib/storage";
 import { Habit, HabitLog } from "@/types";
 
@@ -44,11 +47,8 @@ export default function HabitDetailScreen() {
   const { deleteHabit, logHabit, refreshHabits } = useHabits();
   const { logs, refreshLogs, deleteLog } = useHabitLogs(id || "");
 
-  const mutedColor = useThemeColor({}, "muted");
-  const dangerColor = useThemeColor({}, "danger");
-  const cardBackground = useThemeColor({}, "card");
-  const borderColor = useThemeColor({}, "cardBorder");
-  const tintColor = useThemeColor({}, "tint");
+  const colorScheme = useColorScheme() ?? "light";
+  const colors = Colors[colorScheme];
 
   const loadHabit = useCallback(async () => {
     if (!id) return;
@@ -195,16 +195,16 @@ export default function HabitDetailScreen() {
 
   if (!habit) {
     return (
-      <ThemedView style={styles.container}>
+      <GradientBackground style={styles.container}>
         <View style={[styles.header, { paddingTop: insets.top + 8 }]}>
           <Pressable onPress={handleBack} style={styles.backButton}>
-            <MaterialIcons name="chevron-left" size={28} color={tintColor} />
-            <ThemedText style={[styles.backText, { color: tintColor }]}>Back</ThemedText>
+            <MaterialIcons name="chevron-left" size={28} color={colors.primary} />
+            <ThemedText style={[styles.backText, { color: colors.primary }]}>Back</ThemedText>
           </Pressable>
         </View>
         {loading ? (
           <View style={styles.loadingContent}>
-            <ActivityIndicator size="large" />
+            <ActivityIndicator size="large" color={colors.primary} />
           </View>
         ) : (
           <EmptyState
@@ -213,39 +213,44 @@ export default function HabitDetailScreen() {
             description="This habit may have been deleted"
           />
         )}
-      </ThemedView>
+      </GradientBackground>
     );
   }
 
   return (
-    <ThemedView style={styles.container}>
+    <GradientBackground style={styles.container}>
       <View style={[styles.header, { paddingTop: insets.top + 8 }]}>
         <Pressable onPress={handleBack} style={styles.backButton}>
-          <MaterialIcons name="chevron-left" size={28} color={tintColor} />
-          <ThemedText style={[styles.backText, { color: tintColor }]}>Back</ThemedText>
+          <MaterialIcons name="chevron-left" size={28} color={colors.primary} />
+          <ThemedText style={[styles.backText, { color: colors.primary }]}>Back</ThemedText>
         </Pressable>
         <View style={styles.headerActions}>
           <Pressable onPress={handleEdit} style={styles.headerAction}>
-            <ThemedText style={styles.editText}>Edit</ThemedText>
+            <ThemedText style={[styles.editText, { color: colors.text }]}>Edit</ThemedText>
           </Pressable>
           <Pressable onPress={handleDelete} style={styles.headerAction}>
-            <ThemedText style={[styles.deleteText, { color: dangerColor }]}>Delete</ThemedText>
+            <ThemedText style={[styles.deleteText, { color: colors.danger }]}>Delete</ThemedText>
           </Pressable>
         </View>
       </View>
 
       {/* Habit Header */}
       <View style={styles.habitHeader}>
-        <View style={[styles.iconContainer, { backgroundColor: habit.color + "20" }]}>
-          <MaterialIcons name={habit.icon} size={40} color={habit.color} />
-        </View>
-        <ThemedText type="title" style={styles.habitName}>
-          {habit.name}
-        </ThemedText>
-        <View style={styles.statsRow}>
-          <ThemedText style={[styles.stat, { color: mutedColor }]}>
-            {logs.length} total logs
-          </ThemedText>
+        <View style={styles.habitTitleRow}>
+          <LinearGradient
+            colors={[habit.color + "30", habit.color + "15"]}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={styles.iconContainer}
+          >
+            <MaterialIcons name={habit.icon} size={28} color={habit.color} />
+          </LinearGradient>
+          <View style={styles.habitInfo}>
+            <ThemedText style={[styles.habitName, { color: colors.text }]}>{habit.name}</ThemedText>
+            <ThemedText style={[styles.habitStats, { color: colors.muted }]}>
+              {logs.length} entries logged
+            </ThemedText>
+          </View>
         </View>
       </View>
 
@@ -253,20 +258,30 @@ export default function HabitDetailScreen() {
       <View style={styles.logButtonContainer}>
         <Pressable
           onPress={handleLogNow}
-          style={({ pressed }) => [
-            styles.logButton,
-            { backgroundColor: habit.color, opacity: pressed ? 0.8 : 1 },
-          ]}
+          style={({ pressed }) => [styles.logButton, { opacity: pressed ? 0.8 : 1 }]}
         >
-          <ThemedText style={styles.logButtonText}>Log Now</ThemedText>
+          <LinearGradient
+            colors={[habit.color, habit.color + "CC"]}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={styles.logButtonGradient}
+          >
+            <MaterialIcons name="add" size={20} color="#FFFFFF" />
+            <ThemedText style={styles.logButtonText}>Log Now</ThemedText>
+          </LinearGradient>
         </Pressable>
         <Pressable
           onPress={handleLogCustomDate}
           style={({ pressed }) => [
             styles.logButtonSecondary,
-            { borderColor: habit.color, opacity: pressed ? 0.8 : 1 },
+            {
+              borderColor: habit.color,
+              backgroundColor: habit.color + "10",
+              opacity: pressed ? 0.8 : 1,
+            },
           ]}
         >
+          <MaterialIcons name="schedule" size={18} color={habit.color} />
           <ThemedText style={[styles.logButtonSecondaryText, { color: habit.color }]}>
             Custom Date
           </ThemedText>
@@ -277,8 +292,8 @@ export default function HabitDetailScreen() {
       {Platform.OS === "ios" ? (
         <Modal visible={showDatePicker} transparent animationType="fade">
           <View style={styles.modalOverlay}>
-            <View style={[styles.datePickerModal, { backgroundColor: cardBackground }]}>
-              <ThemedText type="subtitle" style={styles.datePickerTitle}>
+            <GlassCard variant="elevated" style={styles.datePickerModal}>
+              <ThemedText style={[styles.datePickerTitle, { color: colors.text }]}>
                 Select Date & Time
               </ThemedText>
               <DateTimePicker
@@ -292,33 +307,35 @@ export default function HabitDetailScreen() {
               <View style={styles.datePickerButtons}>
                 <Pressable
                   onPress={() => setShowDatePicker(false)}
-                  style={[styles.datePickerButton, { borderColor }]}
+                  style={[styles.datePickerButton, { backgroundColor: colors.glass }]}
                 >
-                  <ThemedText>Cancel</ThemedText>
+                  <ThemedText style={{ color: colors.text }}>Cancel</ThemedText>
                 </Pressable>
-                <Pressable
-                  onPress={handleConfirmDate}
-                  style={[styles.datePickerButton, { backgroundColor: habit.color }]}
-                >
-                  <ThemedText style={styles.datePickerConfirmText}>Confirm</ThemedText>
+                <Pressable onPress={handleConfirmDate}>
+                  <LinearGradient
+                    colors={[habit.color, habit.color + "CC"]}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 1 }}
+                    style={styles.datePickerButton}
+                  >
+                    <ThemedText style={styles.datePickerConfirmText}>Confirm</ThemedText>
+                  </LinearGradient>
                 </Pressable>
               </View>
-            </View>
+            </GlassCard>
           </View>
         </Modal>
       ) : null}
 
       {/* Logs List */}
       <View style={styles.logsSection}>
-        <ThemedText type="subtitle" style={styles.logsTitle}>
-          History
-        </ThemedText>
+        <ThemedText style={[styles.logsTitle, { color: colors.text }]}>History</ThemedText>
         {logs.length === 0 ? (
-          <View style={styles.emptyLogs}>
-            <ThemedText style={[styles.emptyLogsText, { color: mutedColor }]}>
+          <GlassCard style={styles.emptyLogs}>
+            <ThemedText style={[styles.emptyLogsText, { color: colors.muted }]}>
               No logs yet. Tap &quot;Log Now&quot; to record your first entry!
             </ThemedText>
-          </View>
+          </GlassCard>
         ) : (
           <FlatList
             data={logs}
@@ -332,7 +349,7 @@ export default function HabitDetailScreen() {
           />
         )}
       </View>
-    </ThemedView>
+    </GradientBackground>
   );
 }
 
@@ -349,8 +366,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    paddingHorizontal: 16,
-    paddingBottom: 8,
+    paddingHorizontal: GlassStyles.spacing.md,
+    paddingBottom: GlassStyles.spacing.sm,
   },
   backButton: {
     flexDirection: "row",
@@ -359,125 +376,145 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   backText: {
-    fontSize: 17,
+    ...Typography.body,
   },
   headerActions: {
     flexDirection: "row",
-    gap: 16,
+    gap: GlassStyles.spacing.md,
   },
   headerAction: {
     paddingVertical: 8,
   },
   editText: {
-    fontSize: 17,
+    ...Typography.body,
   },
   deleteText: {
-    fontSize: 17,
+    ...Typography.body,
   },
   habitHeader: {
+    flexDirection: "row",
     alignItems: "center",
-    paddingVertical: 24,
-    gap: 12,
+    paddingHorizontal: GlassStyles.spacing.md,
+    paddingVertical: GlassStyles.spacing.lg,
+    marginBottom: GlassStyles.spacing.md,
+  },
+  habitTitleRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: GlassStyles.spacing.md,
+    flex: 1,
   },
   iconContainer: {
-    width: 88,
-    height: 88,
-    borderRadius: 22,
+    width: 56,
+    height: 56,
+    borderRadius: 16,
     alignItems: "center",
     justifyContent: "center",
   },
+  habitInfo: {
+    flex: 1,
+    gap: 4,
+  },
   habitName: {
-    textAlign: "center",
-    paddingHorizontal: 16,
+    ...Typography.title2,
   },
-  statsRow: {
-    flexDirection: "row",
-    gap: 16,
-  },
-  stat: {
-    fontSize: 15,
+  habitStats: {
+    ...Typography.caption1,
   },
   logButtonContainer: {
-    paddingHorizontal: 16,
-    marginBottom: 24,
+    paddingHorizontal: GlassStyles.spacing.md,
+    marginBottom: GlassStyles.spacing.md,
     flexDirection: "row",
-    gap: 12,
+    gap: GlassStyles.spacing.sm,
   },
   logButton: {
-    flex: 1,
-    paddingVertical: 16,
-    borderRadius: 14,
+    flex: 3,
+    borderRadius: GlassStyles.borderRadius.md,
+    overflow: "hidden",
+  },
+  logButtonGradient: {
+    flexDirection: "row",
     alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 14,
+    gap: 6,
   },
   logButtonText: {
     color: "#FFFFFF",
-    fontSize: 18,
+    ...Typography.subhead,
     fontWeight: "600",
   },
   logButtonSecondary: {
-    flex: 1,
-    paddingVertical: 16,
-    borderRadius: 14,
+    flex: 2,
+    flexDirection: "row",
+    paddingVertical: 14,
+    borderRadius: GlassStyles.borderRadius.md,
     alignItems: "center",
-    borderWidth: 2,
+    justifyContent: "center",
+    borderWidth: 1.5,
+    gap: 6,
   },
   logButtonSecondaryText: {
-    fontSize: 16,
+    ...Typography.subhead,
     fontWeight: "600",
   },
   modalOverlay: {
     flex: 1,
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    backgroundColor: "rgba(0, 0, 0, 0.6)",
     justifyContent: "center",
     alignItems: "center",
     padding: 20,
   },
   datePickerModal: {
-    borderRadius: 20,
-    padding: 20,
     width: "100%",
     maxWidth: 360,
+    padding: GlassStyles.spacing.lg,
   },
   datePickerTitle: {
+    ...Typography.title3,
     textAlign: "center",
-    marginBottom: 16,
+    marginBottom: GlassStyles.spacing.md,
   },
   datePicker: {
     height: 200,
   },
   datePickerButtons: {
     flexDirection: "row",
-    gap: 12,
-    marginTop: 16,
+    gap: GlassStyles.spacing.sm,
+    marginTop: GlassStyles.spacing.md,
   },
   datePickerButton: {
     flex: 1,
     paddingVertical: 14,
-    borderRadius: 12,
+    borderRadius: GlassStyles.borderRadius.md,
     alignItems: "center",
-    borderWidth: 1,
   },
   datePickerConfirmText: {
     color: "#FFFFFF",
-    fontWeight: "600",
+    ...Typography.headline,
   },
   logsSection: {
     flex: 1,
-    paddingTop: 8,
+    paddingTop: GlassStyles.spacing.md,
   },
   logsTitle: {
-    paddingHorizontal: 16,
-    marginBottom: 12,
+    ...Typography.subhead,
+    fontWeight: "600",
+    letterSpacing: 0.5,
+    textTransform: "uppercase",
+    paddingHorizontal: GlassStyles.spacing.md,
+    marginBottom: GlassStyles.spacing.md,
   },
   logsList: {
-    paddingBottom: 32,
+    paddingBottom: GlassStyles.spacing.xxl,
+    paddingHorizontal: GlassStyles.spacing.md,
   },
   emptyLogs: {
-    padding: 32,
+    marginHorizontal: GlassStyles.spacing.md,
     alignItems: "center",
   },
   emptyLogsText: {
     textAlign: "center",
-    fontSize: 15,
+    ...Typography.body,
   },
 });

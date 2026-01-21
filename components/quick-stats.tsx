@@ -1,15 +1,18 @@
 /**
- * QuickStats - Horizontal row of key statistics
+ * QuickStats - Glassmorphism statistics row
  */
 
 import { StyleSheet, View } from "react-native";
 
 import { ThemedText } from "@/components/themed-text";
-import { useThemeColor } from "@/hooks/use-theme-color";
+import { GlassCard } from "@/components/ui/glass-card";
+import { Colors, GlassStyles, Typography } from "@/constants/theme";
+import { useColorScheme } from "@/hooks/use-color-scheme";
 
 interface StatItem {
   value: number | string;
   label: string;
+  color?: string;
 }
 
 interface QuickStatsProps {
@@ -17,39 +20,53 @@ interface QuickStatsProps {
 }
 
 export function QuickStats({ stats }: QuickStatsProps) {
-  const cardBackground = useThemeColor({}, "card");
-  const borderColor = useThemeColor({}, "cardBorder");
-  const mutedColor = useThemeColor({}, "muted");
-  const tintColor = useThemeColor({}, "tint");
+  const colorScheme = useColorScheme() ?? "light";
+  const colors = Colors[colorScheme];
 
   return (
-    <View style={[styles.container, { backgroundColor: cardBackground, borderColor }]}>
+    <GlassCard variant="elevated" style={styles.container}>
       {stats.map((stat, i) => (
-        <View key={i} style={[styles.stat, i < stats.length - 1 && styles.statBorder]}>
-          <ThemedText style={[styles.value, { color: tintColor }]}>{stat.value}</ThemedText>
-          <ThemedText style={[styles.label, { color: mutedColor }]}>{stat.label}</ThemedText>
+        <View key={i} style={styles.statWrapper}>
+          <View style={styles.stat}>
+            <ThemedText style={[styles.value, { color: stat.color || colors.tint }]}>
+              {stat.value}
+            </ThemedText>
+            <ThemedText style={[styles.label, { color: colors.muted }]}>{stat.label}</ThemedText>
+          </View>
+          {i < stats.length - 1 && (
+            <View style={[styles.divider, { backgroundColor: colors.glassBorder }]} />
+          )}
         </View>
       ))}
-    </View>
+    </GlassCard>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
-    borderRadius: 16,
-    borderWidth: 1,
-    padding: 16,
-    marginBottom: 16,
+    marginBottom: GlassStyles.spacing.md,
+  },
+  statWrapper: {
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
   },
   stat: {
     flex: 1,
     alignItems: "center",
+    paddingVertical: GlassStyles.spacing.xs,
   },
-  statBorder: {
-    borderRightWidth: 1,
-    borderRightColor: "rgba(128, 128, 128, 0.2)",
+  value: {
+    fontSize: 24,
+    fontWeight: "700",
   },
-  value: { fontSize: 22, fontWeight: "700" },
-  label: { fontSize: 12, marginTop: 4, fontWeight: "500" },
+  label: {
+    ...Typography.caption1,
+    marginTop: 4,
+  },
+  divider: {
+    width: 1,
+    height: 36,
+  },
 });

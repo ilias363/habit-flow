@@ -1,24 +1,26 @@
 /**
- * WeekdayChart - Aggregated activity per day of week across all time
+ * WeekdayChart - Glassmorphism activity chart by day of week
  */
 
+import { LinearGradient } from "expo-linear-gradient";
 import { StyleSheet, View } from "react-native";
 
 import { ThemedText } from "@/components/themed-text";
-import { useThemeColor } from "@/hooks/use-theme-color";
+import { GlassCard } from "@/components/ui/glass-card";
+import { Colors, GlassStyles, Typography } from "@/constants/theme";
+import { useColorScheme } from "@/hooks/use-color-scheme";
 import { HabitLog } from "@/types";
 
 interface WeekdayChartProps {
   logs: HabitLog[];
 }
 
-const DAY_NAMES = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+const DAY_NAMES = ["S", "M", "T", "W", "T", "F", "S"];
+const FULL_DAY_NAMES = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
 export function WeekdayChart({ logs }: WeekdayChartProps) {
-  const cardBackground = useThemeColor({}, "card");
-  const borderColor = useThemeColor({}, "cardBorder");
-  const mutedColor = useThemeColor({}, "muted");
-  const tintColor = useThemeColor({}, "tint");
+  const colorScheme = useColorScheme() ?? "light";
+  const colors = Colors[colorScheme];
 
   const today = new Date().getDay();
 
@@ -27,52 +29,105 @@ export function WeekdayChart({ logs }: WeekdayChartProps) {
     const day = new Date(log.timestamp).getDay();
     counts[day]++;
   });
-  const weekdayData = DAY_NAMES.map((name, i) => ({ name, count: counts[i], isToday: i === today }));
+  const weekdayData = FULL_DAY_NAMES.map((name, i) => ({
+    name: DAY_NAMES[i],
+    fullName: name,
+    count: counts[i],
+    isToday: i === today,
+  }));
 
   const maxCount = Math.max(1, ...weekdayData.map(d => d.count));
 
   return (
-    <View style={[styles.container, { backgroundColor: cardBackground, borderColor }]}>
-      <ThemedText style={styles.title}>Activity by Day</ThemedText>
-      <ThemedText style={[styles.subtitle, { color: mutedColor }]}>
-        Aggregated across all time
+    <GlassCard variant="elevated" style={styles.container}>
+      <ThemedText style={[styles.title, { color: colors.text }]}>Weekly Patterns</ThemedText>
+      <ThemedText style={[styles.subtitle, { color: colors.muted }]}>
+        Your most active days
       </ThemedText>
       <View style={styles.chart}>
         {weekdayData.map((day, i) => (
           <View key={i} style={styles.barWrapper}>
             <View style={styles.barContainer}>
-              <View
-                style={[
-                  styles.bar,
-                  {
-                    height: `${(day.count / maxCount) * 100}%`,
-                    backgroundColor: day.isToday ? tintColor : mutedColor,
-                    minHeight: day.count > 0 ? 8 : 4,
-                  },
-                ]}
-              />
+              {day.count > 0 ? (
+                <LinearGradient
+                  colors={
+                    day.isToday
+                      ? colors.gradientPrimary
+                      : ([colors.muted + "60", colors.muted + "40"] as [string, string])
+                  }
+                  start={{ x: 0, y: 1 }}
+                  end={{ x: 0, y: 0 }}
+                  style={[
+                    styles.bar,
+                    {
+                      height: `${(day.count / maxCount) * 100}%`,
+                      minHeight: 8,
+                    },
+                  ]}
+                />
+              ) : (
+                <View
+                  style={[
+                    styles.bar,
+                    {
+                      height: 4,
+                      backgroundColor: colors.glassBorder,
+                    },
+                  ]}
+                />
+              )}
             </View>
-            <ThemedText
-              style={[styles.label, day.isToday && { color: tintColor, fontWeight: "600" }]}
+            <View
+              style={[
+                styles.labelContainer,
+                day.isToday && { backgroundColor: colors.tint + "20" },
+              ]}
             >
-              {day.name}
-            </ThemedText>
-            <ThemedText style={[styles.count, { color: mutedColor }]}>{day.count}</ThemedText>
+              <ThemedText
+                style={[
+                  styles.label,
+                  { color: day.isToday ? colors.tint : colors.muted },
+                  day.isToday && styles.labelActive,
+                ]}
+              >
+                {day.name}
+              </ThemedText>
+            </View>
+            <ThemedText style={[styles.count, { color: colors.muted }]}>{day.count}</ThemedText>
           </View>
         ))}
       </View>
-    </View>
+    </GlassCard>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { borderRadius: 16, borderWidth: 1, padding: 16, marginBottom: 16 },
-  title: { fontSize: 17, fontWeight: "600", marginBottom: 4 },
-  subtitle: { fontSize: 13, marginBottom: 16 },
-  chart: { flexDirection: "row", justifyContent: "space-between", height: 100 },
+  container: { marginBottom: GlassStyles.spacing.md },
+  title: { ...Typography.headline, marginBottom: 4 },
+  subtitle: { ...Typography.footnote, marginBottom: GlassStyles.spacing.md },
+  chart: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    height: 120,
+    alignItems: "flex-end",
+  },
   barWrapper: { flex: 1, alignItems: "center" },
-  barContainer: { flex: 1, width: 20, justifyContent: "flex-end", marginBottom: 8 },
-  bar: { width: "100%", borderRadius: 4, minHeight: 4 },
-  label: { fontSize: 11, marginBottom: 2 },
-  count: { fontSize: 10 },
+  barContainer: {
+    flex: 1,
+    width: 24,
+    justifyContent: "flex-end",
+    marginBottom: 8,
+  },
+  bar: { width: "100%", borderRadius: 6 },
+  labelContainer: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 4,
+  },
+  label: { ...Typography.caption1 },
+  labelActive: { fontWeight: "700" },
+  count: { ...Typography.caption2 },
 });

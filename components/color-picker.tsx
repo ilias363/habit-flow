@@ -1,11 +1,12 @@
 /**
- * ColorPicker - Grid of color options for habit customization
+ * ColorPicker - Glassmorphism color selection grid
  */
 
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import * as Haptics from "expo-haptics";
 import { Pressable, StyleSheet, View } from "react-native";
 
-import { useThemeColor } from "@/hooks/use-theme-color";
+import { GlassStyles } from "@/constants/theme";
 import { HABIT_COLORS } from "@/types";
 
 interface ColorPickerProps {
@@ -22,8 +23,6 @@ function ColorOption({
   isSelected: boolean;
   onPress: () => void;
 }) {
-  const backgroundColor = useThemeColor({}, "background");
-
   const handlePress = () => {
     Haptics.selectionAsync();
     onPress();
@@ -34,14 +33,8 @@ function ColorOption({
       onPress={handlePress}
       style={({ pressed }) => [styles.colorOption, { opacity: pressed ? 0.7 : 1 }]}
     >
-      <View
-        style={[
-          styles.colorCircle,
-          { backgroundColor: color },
-          isSelected && [styles.selected, { borderColor: backgroundColor }],
-        ]}
-      >
-        {isSelected && <View style={[styles.checkmark, { backgroundColor }]} />}
+      <View style={[styles.colorCircle, { backgroundColor: color }, isSelected && styles.selected]}>
+        {isSelected && <MaterialIcons name="check" size={20} color="#FFFFFF" />}
       </View>
     </Pressable>
   );
@@ -66,9 +59,9 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
     flexWrap: "wrap",
-    gap: 12,
+    gap: GlassStyles.spacing.sm,
     justifyContent: "center",
-    paddingVertical: 8,
+    paddingVertical: GlassStyles.spacing.sm,
   },
   colorOption: {
     padding: 4,
@@ -81,16 +74,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   selected: {
-    borderWidth: 3,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 4,
-  },
-  checkmark: {
-    width: 12,
-    height: 12,
-    borderRadius: 6,
+    transform: [{ scale: 1.1 }],
   },
 });

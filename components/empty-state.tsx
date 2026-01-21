@@ -1,10 +1,13 @@
 /**
- * EmptyState - Displays when there are no habits
+ * EmptyState - Glassmorphism empty state with visual appeal
  */
 
-import { ThemedText } from "@/components/themed-text";
-import { useThemeColor } from "@/hooks/use-theme-color";
 import { StyleSheet, View } from "react-native";
+
+import { ThemedText } from "@/components/themed-text";
+import { GlassCard } from "@/components/ui/glass-card";
+import { Colors, GlassStyles, Typography } from "@/constants/theme";
+import { useColorScheme } from "@/hooks/use-color-scheme";
 
 interface EmptyStateProps {
   title: string;
@@ -12,14 +15,19 @@ interface EmptyStateProps {
   icon?: string;
 }
 
-export function EmptyState({ title, description, icon = "📋" }: EmptyStateProps) {
-  const mutedColor = useThemeColor({}, "muted");
+export function EmptyState({ title, description, icon = "✨" }: EmptyStateProps) {
+  const colorScheme = useColorScheme() ?? "light";
+  const colors = Colors[colorScheme];
 
   return (
     <View style={styles.container}>
-      <ThemedText style={styles.icon}>{icon}</ThemedText>
-      <ThemedText style={styles.title}>{title}</ThemedText>
-      <ThemedText style={[styles.description, { color: mutedColor }]}>{description}</ThemedText>
+      <GlassCard variant="elevated" style={styles.card}>
+        <View style={styles.iconContainer}>
+          <ThemedText style={styles.icon}>{icon}</ThemedText>
+        </View>
+        <ThemedText style={[styles.title, { color: colors.text }]}>{title}</ThemedText>
+        <ThemedText style={[styles.description, { color: colors.muted }]}>{description}</ThemedText>
+      </GlassCard>
     </View>
   );
 }
@@ -29,21 +37,33 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
-    padding: 32,
-    gap: 12,
+    padding: GlassStyles.spacing.xl,
+  },
+  card: {
+    alignItems: "center",
+    padding: GlassStyles.spacing.xl,
+    maxWidth: 300,
+  },
+  iconContainer: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    backgroundColor: "rgba(124, 58, 237, 0.1)",
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: GlassStyles.spacing.md,
   },
   icon: {
-    fontSize: 64,
-    lineHeight: 80,
-    marginBottom: 8,
+    fontSize: 40,
+    lineHeight: 48,
   },
   title: {
-    fontSize: 20,
-    fontWeight: "600",
+    ...Typography.title2,
     textAlign: "center",
+    marginBottom: GlassStyles.spacing.sm,
   },
   description: {
-    fontSize: 15,
+    ...Typography.callout,
     textAlign: "center",
     lineHeight: 22,
   },

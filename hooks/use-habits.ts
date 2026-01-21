@@ -37,12 +37,18 @@ export function useHabits(): UseHabitsReturn {
     const habitLogs = allLogs.filter(l => l.habitId === habit.id);
     const today = Date.now();
     const todayLogs = habitLogs.filter(l => isSameDay(l.timestamp, today)).length;
+
+    // Calculate weekly logs (last 7 days)
+    const oneWeekAgo = today - 7 * 24 * 60 * 60 * 1000;
+    const weeklyLogs = habitLogs.filter(l => l.timestamp >= oneWeekAgo).length;
+
     const sortedLogs = [...habitLogs].sort((a, b) => b.timestamp - a.timestamp);
 
     return {
       ...habit,
       totalLogs: habitLogs.length,
       todayLogs,
+      weeklyLogs,
       currentStreak: calculateStreak(habitLogs),
       lastLogDate: sortedLogs.length > 0 ? sortedLogs[0].timestamp : null,
     };

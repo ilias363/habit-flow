@@ -1,12 +1,14 @@
 /**
- * Data stats card for settings
+ * DataStatsCard - Minimal data overview for settings
  */
 
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { StyleSheet, View } from "react-native";
 
 import { ThemedText } from "@/components/themed-text";
-import { useThemeColor } from "@/hooks/use-theme-color";
+import { GlassCard } from "@/components/ui/glass-card";
+import { Colors, GlassStyles, Typography } from "@/constants/theme";
+import { useColorScheme } from "@/hooks/use-color-scheme";
 
 interface DataStatsCardProps {
   habitCount: number;
@@ -14,66 +16,70 @@ interface DataStatsCardProps {
 }
 
 export function DataStatsCard({ habitCount, logCount }: DataStatsCardProps) {
-  const cardBg = useThemeColor({}, "card");
-  const borderColor = useThemeColor({}, "cardBorder");
-  const tintColor = useThemeColor({}, "tint");
-  const mutedColor = useThemeColor({}, "muted");
+  const colorScheme = useColorScheme() ?? "light";
+  const colors = Colors[colorScheme];
 
   return (
-    <View style={[styles.card, { backgroundColor: cardBg, borderColor }]}>
-      <View style={styles.header}>
-        <View style={[styles.iconContainer, { backgroundColor: tintColor + "20" }]}>
-          <MaterialIcons name="storage" size={22} color={tintColor} />
-        </View>
-        <ThemedText type="subtitle">Your Data</ThemedText>
-      </View>
+    <GlassCard variant="elevated" style={styles.card}>
       <View style={styles.row}>
         <View style={styles.item}>
-          <ThemedText style={[styles.value, { color: tintColor }]}>{habitCount}</ThemedText>
-          <ThemedText style={[styles.label, { color: mutedColor }]}>Habits</ThemedText>
+          <View style={[styles.iconCircle, { backgroundColor: colors.tint + "20" }]}>
+            <MaterialIcons name="auto-awesome" size={18} color={colors.tint} />
+          </View>
+          <View style={styles.textContainer}>
+            <ThemedText style={[styles.value, { color: colors.text }]}>{habitCount}</ThemedText>
+            <ThemedText style={[styles.label, { color: colors.muted }]}>Habits</ThemedText>
+          </View>
         </View>
+        <View style={[styles.divider, { backgroundColor: colors.glassBorder }]} />
         <View style={styles.item}>
-          <ThemedText style={[styles.value, { color: tintColor }]}>{logCount}</ThemedText>
-          <ThemedText style={[styles.label, { color: mutedColor }]}>Log Entries</ThemedText>
+          <View style={[styles.iconCircle, { backgroundColor: colors.tintSecondary + "20" }]}>
+            <MaterialIcons name="history" size={18} color={colors.tintSecondary} />
+          </View>
+          <View style={styles.textContainer}>
+            <ThemedText style={[styles.value, { color: colors.text }]}>{logCount}</ThemedText>
+            <ThemedText style={[styles.label, { color: colors.muted }]}>Entries</ThemedText>
+          </View>
         </View>
       </View>
-    </View>
+    </GlassCard>
   );
 }
 
 const styles = StyleSheet.create({
   card: {
-    borderRadius: 16,
-    borderWidth: 1,
-    padding: 20,
-    marginBottom: 24,
+    marginBottom: GlassStyles.spacing.lg,
   },
-  header: {
+  row: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 16,
   },
-  iconContainer: {
+  item: {
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+  },
+  iconCircle: {
     width: 40,
     height: 40,
     borderRadius: 12,
     alignItems: "center",
     justifyContent: "center",
-    marginRight: 12,
   },
-  row: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-  },
-  item: {
-    alignItems: "center",
+  textContainer: {
+    gap: 2,
   },
   value: {
-    fontSize: 28,
-    fontWeight: "bold",
+    fontSize: 22,
+    fontWeight: "700",
   },
   label: {
-    fontSize: 13,
-    marginTop: 4,
+    ...Typography.caption1,
+  },
+  divider: {
+    width: 1,
+    height: 40,
+    marginHorizontal: GlassStyles.spacing.md,
   },
 });

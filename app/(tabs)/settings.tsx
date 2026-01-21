@@ -1,5 +1,5 @@
 /**
- * Settings screen - Export, import, and data management
+ * Settings screen - Glassmorphism data management
  */
 
 import Constants from "expo-constants";
@@ -9,14 +9,16 @@ import { useFocusEffect } from "expo-router";
 import * as Sharing from "expo-sharing";
 import { useCallback, useState } from "react";
 import { Alert, ScrollView, StyleSheet, View } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { DataStatsCard } from "@/components/data-stats-card";
+import { ScreenHeader } from "@/components/screen-header";
 import { SettingsButton } from "@/components/settings-button";
 import { ThemedText } from "@/components/themed-text";
-import { ThemedView } from "@/components/themed-view";
+import { GlassCard } from "@/components/ui/glass-card";
+import { GradientBackground } from "@/components/ui/gradient-background";
+import { Colors, GlassStyles, Typography } from "@/constants/theme";
+import { useColorScheme } from "@/hooks/use-color-scheme";
 import { useHabits } from "@/hooks/use-habits";
-import { useThemeColor } from "@/hooks/use-theme-color";
 import { clearAllData, getHabits, getLogs, saveHabits, saveLogs } from "@/lib/storage";
 import { Habit, HabitLog } from "@/types";
 
@@ -28,14 +30,12 @@ interface ExportData {
 }
 
 export default function SettingsScreen() {
-  const insets = useSafeAreaInsets();
   const { refreshHabits } = useHabits();
   const [loading, setLoading] = useState<string | null>(null);
   const [stats, setStats] = useState({ habitCount: 0, logCount: 0 });
 
-  const cardBg = useThemeColor({}, "card");
-  const borderColor = useThemeColor({}, "cardBorder");
-  const mutedColor = useThemeColor({}, "muted");
+  const colorScheme = useColorScheme() ?? "light";
+  const colors = Colors[colorScheme];
 
   const loadStats = async () => {
     const [habits, logs] = await Promise.all([getHabits(), getLogs()]);
@@ -200,70 +200,65 @@ export default function SettingsScreen() {
   };
 
   return (
-    <ThemedView style={styles.container}>
-      <View style={[styles.header, { paddingTop: insets.top + 16 }]}>
-        <ThemedText type="title">Settings</ThemedText>
-        <ThemedText style={[styles.subtitle, { color: mutedColor }]}>Manage your data</ThemedText>
-      </View>
+    <GradientBackground style={styles.container}>
+      <ScreenHeader title="Settings" subtitle="Manage" />
 
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
         <DataStatsCard habitCount={stats.habitCount} logCount={stats.logCount} />
 
         <View style={styles.section}>
-          <ThemedText type="subtitle" style={styles.sectionTitle}>
-            Backup
+          <ThemedText style={[styles.sectionTitle, { color: colors.text }]}>
+            Backup & Restore
           </ThemedText>
-          <View style={[styles.card, { backgroundColor: cardBg, borderColor }]}>
+          <GlassCard variant="default" noPadding style={styles.card}>
             <SettingsButton
-              icon="file-upload"
-              iconColor="#3b82f6"
+              icon="cloud-upload"
+              iconColor={colors.tint}
               title="Export Data"
-              description="Save as JSON backup file"
+              description="Save your habits as a backup file"
               onPress={handleExport}
               loading={loading === "export"}
             />
             <SettingsButton
-              icon="file-download"
-              iconColor="#10b981"
+              icon="cloud-download"
+              iconColor={colors.success}
               title="Import Data"
-              description="Restore from backup file"
+              description="Restore from a backup file"
               onPress={handleImport}
               loading={loading === "import"}
               isLast
             />
-          </View>
+          </GlassCard>
         </View>
 
         <View style={styles.section}>
-          <ThemedText type="subtitle" style={styles.sectionTitle}>
-            Danger Zone
-          </ThemedText>
-          <View style={[styles.card, { backgroundColor: cardBg, borderColor }]}>
+          <ThemedText style={[styles.sectionTitle, { color: colors.text }]}>Danger Zone</ThemedText>
+          <GlassCard variant="default" noPadding style={styles.card}>
             <SettingsButton
               icon="delete-forever"
-              iconColor="#ef4444"
+              iconColor={colors.danger}
               title="Clear All Data"
-              description="Delete all habits and logs"
+              description="Permanently delete all habits and logs"
               onPress={handleClearData}
               loading={loading === "clear"}
               destructive
               isLast
             />
-          </View>
+          </GlassCard>
         </View>
 
-        <View style={[styles.infoCard, { backgroundColor: cardBg, borderColor }]}>
-          <ThemedText style={[styles.infoText, { color: mutedColor }]}>
-            All data is stored locally on your device.{"\n"}
-            Create regular backups to prevent data loss.
+        <GlassCard variant="default" style={styles.infoCard}>
+          <ThemedText style={[styles.infoText, { color: colors.muted }]}>
+            Your data is stored securely on your device.{"\n"}
+            Use export to transfer to another device.
           </ThemedText>
-        </View>
+        </GlassCard>
 
-        <ThemedText style={[styles.version, { color: mutedColor }]}>
+        <ThemedText style={[styles.version, { color: colors.muted }]}>
           Habit Flow v{Constants.expoConfig?.version ?? "1.0.0"}
         </ThemedText>
       </ScrollView>
-    </ThemedView>
+    </GradientBackground>
   );
 }
 
@@ -271,45 +266,35 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  header: {
-    paddingHorizontal: 16,
-    paddingBottom: 16,
-  },
-  subtitle: {
-    fontSize: 15,
-    marginTop: 4,
-  },
   content: {
-    paddingHorizontal: 16,
-    paddingTop: 6,
-    paddingBottom: 32,
+    paddingHorizontal: GlassStyles.spacing.md,
+    paddingTop: GlassStyles.spacing.sm,
+    paddingBottom: 120,
   },
   section: {
-    marginBottom: 24,
+    marginBottom: GlassStyles.spacing.lg,
   },
   sectionTitle: {
-    marginBottom: 12,
-    marginLeft: 4,
+    ...Typography.title3,
+    marginBottom: GlassStyles.spacing.md,
+    marginLeft: GlassStyles.spacing.xs,
   },
   card: {
-    borderRadius: 16,
-    borderWidth: 1,
+    borderRadius: GlassStyles.borderRadius.lg,
     overflow: "hidden",
   },
   infoCard: {
-    borderRadius: 16,
-    borderWidth: 1,
-    padding: 16,
+    marginTop: GlassStyles.spacing.sm,
   },
   infoText: {
-    fontSize: 14,
-    lineHeight: 22,
+    ...Typography.footnote,
+    lineHeight: 20,
     textAlign: "center",
   },
   version: {
+    ...Typography.caption1,
     textAlign: "center",
-    fontSize: 13,
-    marginTop: 24,
+    marginTop: GlassStyles.spacing.xl,
     opacity: 0.6,
   },
 });

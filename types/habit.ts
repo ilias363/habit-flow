@@ -25,6 +25,7 @@ export interface HabitLog {
 export interface HabitWithStats extends Habit {
   totalLogs: number;
   todayLogs: number;
+  weeklyLogs: number;
   currentStreak: number;
   lastLogDate: number | null;
 }

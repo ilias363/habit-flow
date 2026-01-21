@@ -1,9 +1,10 @@
 /**
- * New Habit Screen - Create a new habit
+ * New Habit Screen - Glassmorphism habit creation form
  */
 
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import * as Haptics from "expo-haptics";
+import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import {
@@ -22,9 +23,11 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { ColorPicker } from "@/components/color-picker";
 import { IconPicker } from "@/components/icon-picker";
 import { ThemedText } from "@/components/themed-text";
-import { ThemedView } from "@/components/themed-view";
+import { GlassCard } from "@/components/ui/glass-card";
+import { GradientBackground } from "@/components/ui/gradient-background";
+import { Colors, GlassStyles, Typography } from "@/constants/theme";
+import { useColorScheme } from "@/hooks/use-color-scheme";
 import { useHabits } from "@/hooks/use-habits";
-import { useThemeColor } from "@/hooks/use-theme-color";
 import { HABIT_COLORS, HABIT_ICONS, IconName } from "@/types";
 
 export default function NewHabitScreen() {
@@ -37,10 +40,8 @@ export default function NewHabitScreen() {
   const [color, setColor] = useState<string>(HABIT_COLORS[0]);
   const [saving, setSaving] = useState(false);
 
-  const cardBackground = useThemeColor({}, "card");
-  const borderColor = useThemeColor({}, "cardBorder");
-  const textColor = useThemeColor({}, "text");
-  const mutedColor = useThemeColor({}, "muted");
+  const colorScheme = useColorScheme() ?? "light";
+  const colors = Colors[colorScheme];
 
   const handleSave = async () => {
     if (!name.trim()) {
@@ -67,16 +68,17 @@ export default function NewHabitScreen() {
   };
 
   return (
-    <ThemedView style={styles.container}>
+    <GradientBackground style={styles.container}>
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={styles.keyboardView}
       >
+        {/* Header */}
         <View style={[styles.header, { paddingTop: insets.top + 8 }]}>
           <Pressable onPress={handleCancel} style={styles.headerButton}>
-            <ThemedText style={styles.cancelText}>Cancel</ThemedText>
+            <ThemedText style={[styles.cancelText, { color: colors.muted }]}>Cancel</ThemedText>
           </Pressable>
-          <ThemedText type="subtitle">New Habit</ThemedText>
+          <ThemedText style={[styles.headerTitle, { color: colors.text }]}>New Habit</ThemedText>
           <Pressable
             onPress={handleSave}
             disabled={saving || !name.trim()}
@@ -96,47 +98,62 @@ export default function NewHabitScreen() {
           showsVerticalScrollIndicator={false}
         >
           {/* Preview */}
-          <View style={styles.previewContainer}>
-            <View style={[styles.preview, { backgroundColor: color + "20" }]}>
-              <MaterialIcons name={icon} size={40} color={color} />
-              <ThemedText style={styles.previewName} numberOfLines={1}>
-                {name || "Habit Name"}
-              </ThemedText>
+          <View style={styles.previewSection}>
+            <View style={styles.previewRow}>
+              <LinearGradient
+                colors={[color + "30", color + "15"]}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                style={styles.previewIcon}
+              >
+                <MaterialIcons name={icon} size={28} color={color} />
+              </LinearGradient>
+              <View style={styles.previewInfo}>
+                <ThemedText style={[styles.previewName, { color: colors.text }]} numberOfLines={1}>
+                  {name || "Your Habit"}
+                </ThemedText>
+                <ThemedText style={[styles.previewHint, { color: colors.muted }]}>
+                  Preview
+                </ThemedText>
+              </View>
             </View>
           </View>
 
           {/* Name Input */}
           <View style={styles.section}>
-            <ThemedText style={styles.label}>Name</ThemedText>
-            <TextInput
-              value={name}
-              onChangeText={setName}
-              placeholder="Enter habit name..."
-              placeholderTextColor={mutedColor}
-              style={[
-                styles.input,
-                { backgroundColor: cardBackground, borderColor, color: textColor },
-              ]}
-              maxLength={50}
-              returnKeyType="done"
-              onSubmitEditing={() => Keyboard.dismiss()}
-            />
+            <ThemedText style={[styles.label, { color: colors.muted }]}>NAME</ThemedText>
+            <GlassCard noPadding>
+              <TextInput
+                value={name}
+                onChangeText={setName}
+                placeholder="e.g., Morning Meditation"
+                placeholderTextColor={colors.muted}
+                style={[styles.input, { color: colors.text }]}
+                maxLength={50}
+                returnKeyType="done"
+                onSubmitEditing={() => Keyboard.dismiss()}
+              />
+            </GlassCard>
           </View>
 
           {/* Icon Selection */}
           <View style={styles.section}>
-            <ThemedText style={styles.label}>Icon</ThemedText>
-            <IconPicker selectedIcon={icon} onSelect={setIcon} color={color} />
+            <ThemedText style={[styles.label, { color: colors.muted }]}>ICON</ThemedText>
+            <GlassCard noPadding style={styles.pickerCard}>
+              <IconPicker selectedIcon={icon} onSelect={setIcon} color={color} />
+            </GlassCard>
           </View>
 
           {/* Color Selection */}
           <View style={styles.section}>
-            <ThemedText style={styles.label}>Color</ThemedText>
-            <ColorPicker selectedColor={color} onSelect={setColor} />
+            <ThemedText style={[styles.label, { color: colors.muted }]}>COLOR</ThemedText>
+            <GlassCard noPadding style={styles.pickerCard}>
+              <ColorPicker selectedColor={color} onSelect={setColor} />
+            </GlassCard>
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
-    </ThemedView>
+    </GradientBackground>
   );
 }
 
@@ -151,52 +168,68 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    paddingHorizontal: 16,
-    paddingBottom: 16,
+    paddingHorizontal: GlassStyles.spacing.md,
+    paddingBottom: GlassStyles.spacing.sm,
   },
   headerButton: {
     minWidth: 70,
+    paddingVertical: 8,
   },
   cancelText: {
-    fontSize: 17,
+    ...Typography.body,
+  },
+  headerTitle: {
+    ...Typography.headline,
   },
   saveText: {
-    fontSize: 17,
-    fontWeight: "600",
+    ...Typography.headline,
     textAlign: "right",
   },
   content: {
-    paddingHorizontal: 16,
-    paddingBottom: 32,
+    paddingHorizontal: GlassStyles.spacing.md,
+    paddingBottom: GlassStyles.spacing.xxl,
   },
-  previewContainer: {
-    alignItems: "center",
-    marginVertical: 24,
+  previewSection: {
+    marginBottom: GlassStyles.spacing.xl,
+    paddingVertical: GlassStyles.spacing.md,
   },
-  preview: {
-    paddingVertical: 20,
-    paddingHorizontal: 32,
-    borderRadius: 20,
+  previewRow: {
+    flexDirection: "row",
     alignItems: "center",
-    gap: 8,
+    gap: GlassStyles.spacing.md,
+  },
+  previewIcon: {
+    width: 56,
+    height: 56,
+    borderRadius: 16,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  previewInfo: {
+    flex: 1,
+    gap: 2,
   },
   previewName: {
-    fontSize: 20,
-    fontWeight: "600",
-    maxWidth: 200,
+    ...Typography.title2,
+  },
+  previewHint: {
+    ...Typography.caption1,
   },
   section: {
-    marginBottom: 24,
+    marginBottom: GlassStyles.spacing.lg,
   },
   label: {
-    fontSize: 15,
+    ...Typography.caption1,
     fontWeight: "600",
-    marginBottom: 12,
+    letterSpacing: 0.5,
+    marginBottom: GlassStyles.spacing.sm,
+    marginLeft: GlassStyles.spacing.xs,
   },
   input: {
-    fontSize: 17,
-    padding: 16,
-    borderRadius: 12,
-    borderWidth: 1,
+    ...Typography.body,
+    padding: GlassStyles.spacing.md,
+  },
+  pickerCard: {
+    padding: GlassStyles.spacing.sm,
   },
 });

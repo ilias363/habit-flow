@@ -1,24 +1,25 @@
 /**
- * FloatingButton - Floating action button for adding new habits
+ * FloatingButton - Glassmorphism floating action button
  */
 
 import * as Haptics from "expo-haptics";
-import { Pressable, StyleSheet } from "react-native";
+import { LinearGradient } from "expo-linear-gradient";
+import { Pressable, StyleSheet, View } from "react-native";
 
 import { ThemedText } from "@/components/themed-text";
-import { useThemeColor } from "@/hooks/use-theme-color";
+import { Colors } from "@/constants/theme";
+import { useColorScheme } from "@/hooks/use-color-scheme";
 
 interface FloatingButtonProps {
   onPress: () => void;
-  color?: string;
 }
 
-export function FloatingButton({ onPress, color }: FloatingButtonProps) {
-  const tintColor = useThemeColor({}, "tint");
-  const buttonColor = color || tintColor;
+export function FloatingButton({ onPress }: FloatingButtonProps) {
+  const colorScheme = useColorScheme() ?? "light";
+  const colors = Colors[colorScheme];
 
   const handlePress = () => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     onPress();
   };
 
@@ -29,10 +30,19 @@ export function FloatingButton({ onPress, color }: FloatingButtonProps) {
       accessibilityRole="button"
       style={({ pressed }) => [
         styles.button,
-        { backgroundColor: buttonColor, opacity: pressed ? 0.8 : 1 },
+        { opacity: pressed ? 0.9 : 1, transform: [{ scale: pressed ? 0.95 : 1 }] },
       ]}
     >
-      <ThemedText style={styles.icon}>+</ThemedText>
+      <LinearGradient
+        colors={colors.gradientPrimary}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={styles.gradient}
+      >
+        <ThemedText style={styles.icon}>+</ThemedText>
+      </LinearGradient>
+      {/* Glow effect */}
+      <View style={[styles.glow, { backgroundColor: colors.tint }]} />
     </Pressable>
   );
 }
@@ -40,23 +50,32 @@ export function FloatingButton({ onPress, color }: FloatingButtonProps) {
 const styles = StyleSheet.create({
   button: {
     position: "absolute",
-    bottom: 24,
+    bottom: 100,
     right: 24,
+    width: 60,
+    height: 60,
+  },
+  gradient: {
     width: 60,
     height: 60,
     borderRadius: 30,
     alignItems: "center",
     justifyContent: "center",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 8,
   },
   icon: {
     color: "#FFFFFF",
     fontSize: 32,
     fontWeight: "300",
     lineHeight: 34,
+    marginTop: -2,
+  },
+  glow: {
+    position: "absolute",
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    opacity: 0.4,
+    transform: [{ scale: 1.2 }],
+    zIndex: -1,
   },
 });

@@ -12,14 +12,15 @@ export const unstable_settings = {
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
+  const isDark = colorScheme === "dark";
 
-  // Custom dark theme with our colors
+  // Custom glassmorphism theme
   const customDarkTheme = {
     ...DarkTheme,
     colors: {
       ...DarkTheme.colors,
       background: Colors.dark.background,
-      card: Colors.dark.card,
+      card: Colors.dark.cardSolid,
       border: Colors.dark.cardBorder,
       text: Colors.dark.text,
       primary: Colors.dark.tint,
@@ -31,7 +32,7 @@ export default function RootLayout() {
     colors: {
       ...DefaultTheme.colors,
       background: Colors.light.background,
-      card: Colors.light.card,
+      card: Colors.light.cardSolid,
       border: Colors.light.cardBorder,
       text: Colors.light.text,
       primary: Colors.light.tint,
@@ -39,16 +40,16 @@ export default function RootLayout() {
   };
 
   // Background color for all screens
-  const bgColor = colorScheme === "dark" ? Colors.dark.background : Colors.light.background;
+  const bgColor = isDark ? Colors.dark.background : Colors.light.background;
 
   return (
-    <ThemeProvider value={colorScheme === "dark" ? customDarkTheme : customLightTheme}>
+    <ThemeProvider value={isDark ? customDarkTheme : customLightTheme}>
       <Stack
         screenOptions={{
           headerShown: false,
           contentStyle: { backgroundColor: bgColor },
-          animation: "fade",
-          animationDuration: 150,
+          animation: "fade_from_bottom",
+          animationDuration: 200,
         }}
       >
         <Stack.Screen name="(tabs)" />
@@ -57,6 +58,7 @@ export default function RootLayout() {
           options={{
             presentation: "modal",
             animation: "slide_from_bottom",
+            animationDuration: 250,
           }}
         />
         <Stack.Screen
@@ -64,6 +66,7 @@ export default function RootLayout() {
           options={{
             presentation: "modal",
             animation: "slide_from_right",
+            animationDuration: 200,
           }}
         />
         <Stack.Screen
@@ -71,10 +74,11 @@ export default function RootLayout() {
           options={{
             presentation: "modal",
             animation: "slide_from_bottom",
+            animationDuration: 250,
           }}
         />
       </Stack>
-      <StatusBar style="auto" />
+      <StatusBar style={isDark ? "light" : "dark"} />
     </ThemeProvider>
   );
 }

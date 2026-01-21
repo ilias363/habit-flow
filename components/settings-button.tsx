@@ -1,12 +1,13 @@
 /**
- * Settings action button
+ * SettingsButton - Glassmorphism action button for settings
  */
 
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { ActivityIndicator, Pressable, StyleSheet, View } from "react-native";
 
 import { ThemedText } from "@/components/themed-text";
-import { useThemeColor } from "@/hooks/use-theme-color";
+import { Colors, GlassStyles, Typography } from "@/constants/theme";
+import { useColorScheme } from "@/hooks/use-color-scheme";
 
 interface SettingsButtonProps {
   icon: keyof typeof MaterialIcons.glyphMap;
@@ -29,33 +30,32 @@ export function SettingsButton({
   destructive = false,
   isLast = false,
 }: SettingsButtonProps) {
-  const borderColor = useThemeColor({}, "cardBorder");
-  const mutedColor = useThemeColor({}, "muted");
-  const tintColor = useThemeColor({}, "tint");
+  const colorScheme = useColorScheme() ?? "light";
+  const colors = Colors[colorScheme];
 
   return (
     <Pressable
       style={({ pressed }) => [
         styles.button,
-        !isLast && { borderBottomWidth: 1, borderBottomColor: borderColor },
+        !isLast && { borderBottomWidth: 1, borderBottomColor: colors.glassBorder },
         pressed && styles.pressed,
       ]}
       onPress={onPress}
       disabled={loading}
     >
-      <View style={[styles.iconContainer, { backgroundColor: iconColor + "20" }]}>
+      <View style={[styles.iconContainer, { backgroundColor: iconColor + "18" }]}>
         <MaterialIcons name={icon} size={20} color={iconColor} />
       </View>
       <View style={styles.content}>
-        <ThemedText style={[styles.title, destructive && styles.destructiveText]}>
+        <ThemedText style={[styles.title, { color: destructive ? colors.danger : colors.text }]}>
           {title}
         </ThemedText>
-        <ThemedText style={[styles.description, { color: mutedColor }]}>{description}</ThemedText>
+        <ThemedText style={[styles.description, { color: colors.muted }]}>{description}</ThemedText>
       </View>
       {loading ? (
-        <ActivityIndicator size="small" color={destructive ? "#ef4444" : tintColor} />
+        <ActivityIndicator size="small" color={destructive ? colors.danger : colors.tint} />
       ) : (
-        <MaterialIcons name="chevron-right" size={22} color={mutedColor} />
+        <MaterialIcons name="chevron-right" size={22} color={colors.muted} />
       )}
     </Pressable>
   );
@@ -65,15 +65,15 @@ const styles = StyleSheet.create({
   button: {
     flexDirection: "row",
     alignItems: "center",
-    padding: 16,
+    padding: GlassStyles.spacing.md,
   },
   pressed: {
     opacity: 0.7,
   },
   iconContainer: {
-    width: 36,
-    height: 36,
-    borderRadius: 10,
+    width: 40,
+    height: 40,
+    borderRadius: 12,
     alignItems: "center",
     justifyContent: "center",
     marginRight: 14,
@@ -82,14 +82,10 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   title: {
-    fontSize: 16,
-    fontWeight: "600",
+    ...Typography.headline,
     marginBottom: 2,
   },
   description: {
-    fontSize: 14,
-  },
-  destructiveText: {
-    color: "#ef4444",
+    ...Typography.footnote,
   },
 });

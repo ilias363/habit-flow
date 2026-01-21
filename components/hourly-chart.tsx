@@ -1,11 +1,14 @@
 /**
- * HourlyChart - Aggregated activity per hour of day across all time
+ * HourlyChart - Glassmorphism activity chart by time of day
  */
 
+import { LinearGradient } from "expo-linear-gradient";
 import { StyleSheet, View } from "react-native";
 
 import { ThemedText } from "@/components/themed-text";
-import { useThemeColor } from "@/hooks/use-theme-color";
+import { GlassCard } from "@/components/ui/glass-card";
+import { Colors, GlassStyles, Typography } from "@/constants/theme";
+import { useColorScheme } from "@/hooks/use-color-scheme";
 import { HabitLog } from "@/types";
 
 interface HourlyChartProps {
@@ -13,21 +16,19 @@ interface HourlyChartProps {
 }
 
 export function HourlyChart({ logs }: HourlyChartProps) {
-  const cardBackground = useThemeColor({}, "card");
-  const borderColor = useThemeColor({}, "cardBorder");
-  const mutedColor = useThemeColor({}, "muted");
-  const tintColor = useThemeColor({}, "tint");
+  const colorScheme = useColorScheme() ?? "light";
+  const colors = Colors[colorScheme];
 
   const currentHour = new Date().getHours();
 
-  // Group into 4-hour intervals: 0-3, 4-7, 8-11, 12-15, 16-19, 20-23
+  // Group into 4-hour intervals
   const intervals = [
-    { label: "12-4am", start: 0, end: 4, count: 0 },
-    { label: "4-8am", start: 4, end: 8, count: 0 },
-    { label: "8-12pm", start: 8, end: 12, count: 0 },
-    { label: "12-4pm", start: 12, end: 16, count: 0 },
-    { label: "4-8pm", start: 16, end: 20, count: 0 },
-    { label: "8-12am", start: 20, end: 24, count: 0 },
+    { label: "12-4a", start: 0, end: 4, count: 0 },
+    { label: "4-8a", start: 4, end: 8, count: 0 },
+    { label: "8-12p", start: 8, end: 12, count: 0 },
+    { label: "12-4p", start: 12, end: 16, count: 0 },
+    { label: "4-8p", start: 16, end: 20, count: 0 },
+    { label: "8-12a", start: 20, end: 24, count: 0 },
   ];
 
   logs.forEach(log => {
@@ -44,48 +45,96 @@ export function HourlyChart({ logs }: HourlyChartProps) {
   const maxCount = Math.max(1, ...hourlyData.map(d => d.count));
 
   return (
-    <View style={[styles.container, { backgroundColor: cardBackground, borderColor }]}>
-      <ThemedText style={styles.title}>Activity by Time</ThemedText>
-      <ThemedText style={[styles.subtitle, { color: mutedColor }]}>
-        When you log habits most
+    <GlassCard variant="elevated" style={styles.container}>
+      <ThemedText style={[styles.title, { color: colors.text }]}>Peak Activity</ThemedText>
+      <ThemedText style={[styles.subtitle, { color: colors.muted }]}>
+        Your most active times
       </ThemedText>
       <View style={styles.chart}>
         {hourlyData.map((interval, i) => (
           <View key={i} style={styles.barWrapper}>
             <View style={styles.barContainer}>
-              <View
-                style={[
-                  styles.bar,
-                  {
-                    height: `${(interval.count / maxCount) * 100}%`,
-                    backgroundColor: interval.isCurrent ? tintColor : mutedColor,
-                    minHeight: interval.count > 0 ? 8 : 4,
-                  },
-                ]}
-              />
+              {interval.count > 0 ? (
+                <LinearGradient
+                  colors={
+                    interval.isCurrent
+                      ? colors.gradientPrimary
+                      : ([colors.muted + "60", colors.muted + "40"] as [string, string])
+                  }
+                  start={{ x: 0, y: 1 }}
+                  end={{ x: 0, y: 0 }}
+                  style={[
+                    styles.bar,
+                    {
+                      height: `${(interval.count / maxCount) * 100}%`,
+                      minHeight: 8,
+                    },
+                  ]}
+                />
+              ) : (
+                <View
+                  style={[
+                    styles.bar,
+                    {
+                      height: 4,
+                      backgroundColor: colors.glassBorder,
+                    },
+                  ]}
+                />
+              )}
             </View>
-            <ThemedText
-              style={[styles.label, interval.isCurrent && { color: tintColor, fontWeight: "600" }]}
-              numberOfLines={1}
+            <View
+              style={[
+                styles.labelContainer,
+                interval.isCurrent && { backgroundColor: colors.tint + "20" },
+              ]}
             >
-              {interval.label}
+              <ThemedText
+                style={[
+                  styles.label,
+                  { color: interval.isCurrent ? colors.tint : colors.muted },
+                  interval.isCurrent && styles.labelActive,
+                ]}
+                numberOfLines={1}
+              >
+                {interval.label}
+              </ThemedText>
+            </View>
+            <ThemedText style={[styles.count, { color: colors.muted }]}>
+              {interval.count}
             </ThemedText>
-            <ThemedText style={[styles.count, { color: mutedColor }]}>{interval.count}</ThemedText>
           </View>
         ))}
       </View>
-    </View>
+    </GlassCard>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { borderRadius: 16, borderWidth: 1, padding: 16, marginBottom: 16 },
-  title: { fontSize: 17, fontWeight: "600", marginBottom: 4 },
-  subtitle: { fontSize: 13, marginBottom: 16 },
-  chart: { flexDirection: "row", justifyContent: "space-between", height: 100 },
+  container: { marginBottom: GlassStyles.spacing.md },
+  title: { ...Typography.headline, marginBottom: 4 },
+  subtitle: { ...Typography.footnote, marginBottom: GlassStyles.spacing.md },
+  chart: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    height: 120,
+    alignItems: "flex-end",
+  },
   barWrapper: { flex: 1, alignItems: "center" },
-  barContainer: { flex: 1, width: 20, justifyContent: "flex-end", marginBottom: 8 },
-  bar: { width: "100%", borderRadius: 4, minHeight: 4 },
-  label: { fontSize: 9, marginBottom: 2, textAlign: "center" },
-  count: { fontSize: 10 },
+  barContainer: {
+    flex: 1,
+    width: 24,
+    justifyContent: "flex-end",
+    marginBottom: 8,
+  },
+  bar: { width: "100%", borderRadius: 6 },
+  labelContainer: {
+    paddingHorizontal: 6,
+    paddingVertical: 4,
+    borderRadius: 8,
+    marginBottom: 4,
+  },
+  label: { ...Typography.caption2, textAlign: "center" },
+  labelActive: { fontWeight: "700" },
+  count: { ...Typography.caption2 },
 });

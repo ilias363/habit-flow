@@ -1,12 +1,14 @@
 /**
- * LogEntry - Displays a single habit log entry
+ * LogEntry - Glassmorphism habit log entry display
  */
 
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import * as Haptics from "expo-haptics";
 import { Pressable, StyleSheet, View } from "react-native";
 
 import { ThemedText } from "@/components/themed-text";
-import { useThemeColor } from "@/hooks/use-theme-color";
+import { Colors, GlassStyles, Typography } from "@/constants/theme";
+import { useColorScheme } from "@/hooks/use-color-scheme";
 import { HabitLog } from "@/types";
 
 interface LogEntryProps {
@@ -16,10 +18,8 @@ interface LogEntryProps {
 }
 
 export function LogEntry({ log, color, onDelete }: LogEntryProps) {
-  const cardBackground = useThemeColor({}, "card");
-  const borderColor = useThemeColor({}, "cardBorder");
-  const mutedColor = useThemeColor({}, "muted");
-  const dangerColor = useThemeColor({}, "danger");
+  const colorScheme = useColorScheme() ?? "light";
+  const colors = Colors[colorScheme];
 
   const formatDate = (timestamp: number) => {
     const date = new Date(timestamp);
@@ -52,20 +52,28 @@ export function LogEntry({ log, color, onDelete }: LogEntryProps) {
     <Pressable
       onLongPress={handleLongPress}
       delayLongPress={500}
-      style={[styles.container, { backgroundColor: cardBackground, borderColor }]}
+      style={[
+        styles.container,
+        {
+          backgroundColor: colors.glass,
+          borderColor: colors.glassBorder,
+        },
+      ]}
     >
       <View style={[styles.indicator, { backgroundColor: color }]} />
       <View style={styles.content}>
-        <ThemedText style={styles.date}>{formatDate(log.timestamp)}</ThemedText>
+        <ThemedText style={[styles.date, { color: colors.text }]}>
+          {formatDate(log.timestamp)}
+        </ThemedText>
         {log.note && (
-          <ThemedText style={[styles.note, { color: mutedColor }]} numberOfLines={2}>
+          <ThemedText style={[styles.note, { color: colors.muted }]} numberOfLines={2}>
             {log.note}
           </ThemedText>
         )}
       </View>
       {onDelete && (
         <Pressable onPress={onDelete} style={styles.deleteButton}>
-          <ThemedText style={[styles.deleteText, { color: dangerColor }]}>×</ThemedText>
+          <MaterialIcons name="close" size={18} color={colors.danger} />
         </Pressable>
       )}
     </Pressable>
@@ -76,9 +84,8 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
     alignItems: "center",
-    marginHorizontal: 16,
-    marginVertical: 4,
-    borderRadius: 12,
+    marginVertical: GlassStyles.spacing.xs,
+    borderRadius: GlassStyles.borderRadius.md,
     borderWidth: 1,
     overflow: "hidden",
   },
@@ -88,21 +95,17 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    padding: 14,
+    padding: GlassStyles.spacing.md,
     gap: 4,
   },
   date: {
-    fontSize: 15,
+    ...Typography.subhead,
     fontWeight: "500",
   },
   note: {
-    fontSize: 14,
+    ...Typography.footnote,
   },
   deleteButton: {
-    padding: 12,
-  },
-  deleteText: {
-    fontSize: 24,
-    fontWeight: "300",
+    padding: GlassStyles.spacing.md,
   },
 });

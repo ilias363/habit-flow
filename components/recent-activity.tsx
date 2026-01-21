@@ -1,12 +1,14 @@
 /**
- * RecentActivity - List of recent log entries
+ * RecentActivity - Glassmorphism recent activity feed
  */
 
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { StyleSheet, View } from "react-native";
 
 import { ThemedText } from "@/components/themed-text";
-import { useThemeColor } from "@/hooks/use-theme-color";
+import { GlassCard } from "@/components/ui/glass-card";
+import { Colors, GlassStyles, Typography } from "@/constants/theme";
+import { useColorScheme } from "@/hooks/use-color-scheme";
 import { formatRelativeTime } from "@/lib";
 import { HabitLog, HabitWithStats } from "@/types";
 
@@ -16,10 +18,9 @@ interface RecentActivityProps {
   limit?: number;
 }
 
-export function RecentActivity({ logs, habits, limit = 8 }: RecentActivityProps) {
-  const cardBackground = useThemeColor({}, "card");
-  const borderColor = useThemeColor({}, "cardBorder");
-  const mutedColor = useThemeColor({}, "muted");
+export function RecentActivity({ logs, habits, limit = 6 }: RecentActivityProps) {
+  const colorScheme = useColorScheme() ?? "light";
+  const colors = Colors[colorScheme];
 
   const recentItems = [...logs]
     .sort((a, b) => b.timestamp - a.timestamp)
@@ -31,46 +32,70 @@ export function RecentActivity({ logs, habits, limit = 8 }: RecentActivityProps)
 
   return (
     <View style={styles.section}>
-      <ThemedText type="subtitle" style={styles.title}>
-        Recent Activity
-      </ThemedText>
-      <View style={[styles.list, { backgroundColor: cardBackground, borderColor }]}>
+      <ThemedText style={[styles.title, { color: colors.text }]}>Recent Activity</ThemedText>
+      <GlassCard variant="default" noPadding style={styles.list}>
         {recentItems.map((item, index) => (
           <View
             key={item.id}
             style={[
               styles.item,
               index < recentItems.length - 1 && {
-                borderBottomColor: borderColor,
+                borderBottomColor: colors.glassBorder,
                 borderBottomWidth: 1,
               },
             ]}
           >
-            <View style={[styles.dot, { backgroundColor: item.habit!.color }]} />
+            <View style={[styles.iconBg, { backgroundColor: item.habit!.color + "20" }]}>
+              <MaterialIcons name={item.habit!.icon} size={18} color={item.habit!.color} />
+            </View>
             <View style={styles.info}>
-              <View style={styles.nameRow}>
-                <MaterialIcons name={item.habit!.icon} size={16} color={item.habit!.color} />
-                <ThemedText style={styles.name}>{item.habit!.name}</ThemedText>
-              </View>
-              <ThemedText style={[styles.time, { color: mutedColor }]}>
+              <ThemedText style={[styles.name, { color: colors.text }]}>
+                {item.habit!.name}
+              </ThemedText>
+              <ThemedText style={[styles.time, { color: colors.muted }]}>
                 {formatRelativeTime(item.timestamp)}
               </ThemedText>
             </View>
+            <View style={[styles.indicator, { backgroundColor: item.habit!.color }]} />
           </View>
         ))}
-      </View>
+      </GlassCard>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  section: { marginTop: 8 },
-  title: { marginBottom: 12 },
-  list: { borderRadius: 14, borderWidth: 1, overflow: "hidden" },
-  item: { flexDirection: "row", alignItems: "center", padding: 12, gap: 12 },
-  dot: { width: 8, height: 8, borderRadius: 4 },
-  info: { flex: 1, flexDirection: "row", justifyContent: "space-between", alignItems: "center" },
-  nameRow: { flexDirection: "row", alignItems: "center", gap: 6 },
-  name: { fontSize: 14 },
-  time: { fontSize: 12 },
+  section: { marginTop: GlassStyles.spacing.sm },
+  title: {
+    ...Typography.title3,
+    marginBottom: GlassStyles.spacing.md,
+    marginLeft: GlassStyles.spacing.xs,
+  },
+  list: {
+    borderRadius: GlassStyles.borderRadius.lg,
+    overflow: "hidden",
+  },
+  item: {
+    flexDirection: "row",
+    alignItems: "center",
+    padding: GlassStyles.spacing.md,
+    gap: 12,
+  },
+  iconBg: {
+    width: 36,
+    height: 36,
+    borderRadius: 10,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  info: {
+    flex: 1,
+  },
+  name: { ...Typography.subhead },
+  time: { ...Typography.caption1, marginTop: 2 },
+  indicator: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+  },
 });
