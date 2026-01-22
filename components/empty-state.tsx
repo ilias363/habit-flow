@@ -38,6 +38,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     padding: GlassStyles.spacing.xl,
+    paddingBottom: 120,
   },
   card: {
     alignItems: "center",

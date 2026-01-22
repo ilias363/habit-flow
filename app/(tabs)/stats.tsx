@@ -246,7 +246,7 @@ const styles = StyleSheet.create({
     paddingVertical: GlassStyles.spacing.xxl,
     marginTop: GlassStyles.spacing.xl,
   },
-  emptyIcon: { fontSize: 48, marginBottom: GlassStyles.spacing.md },
+  emptyIcon: { fontSize: 48, lineHeight: 56, marginBottom: GlassStyles.spacing.md },
   emptyTitle: { ...Typography.title2, marginBottom: GlassStyles.spacing.sm },
   emptyText: { ...Typography.callout, textAlign: "center" },
 });

@@ -3,7 +3,7 @@
  */
 
 import { BlurView } from "expo-blur";
-import { View, ViewProps, ViewStyle } from "react-native";
+import { ViewProps, ViewStyle } from "react-native";
 
 import { Colors, GlassStyles } from "@/constants/theme";
 import { useColorScheme } from "@/hooks/use-color-scheme";
@@ -31,9 +31,6 @@ export function GlassCard({
     overflow: "hidden",
     borderWidth: 1,
     borderColor: colors.glassBorder,
-  };
-
-  const contentStyle: ViewStyle = {
     padding: noPadding ? 0 : GlassStyles.spacing.md,
   };
 
@@ -44,7 +41,7 @@ export function GlassCard({
       style={[containerStyle, style]}
       {...props}
     >
-      <View style={contentStyle}>{children}</View>
+      {children}
     </BlurView>
   );
 }
