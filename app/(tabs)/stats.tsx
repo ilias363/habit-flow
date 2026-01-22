@@ -11,6 +11,7 @@ import { Pressable, ScrollView, StyleSheet, View } from "react-native";
 import { HourlyChart } from "@/components/hourly-chart";
 import { RecentActivity } from "@/components/recent-activity";
 import { ScreenHeader } from "@/components/screen-header";
+import { StreakHeatmap } from "@/components/streak-heatmap";
 import { ThemedText } from "@/components/themed-text";
 import { GlassCard } from "@/components/ui/glass-card";
 import { GradientBackground } from "@/components/ui/gradient-background";
@@ -53,6 +54,9 @@ export default function StatsScreen() {
       <ScreenHeader title="Insights" subtitle="Your Progress" />
 
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
+        {/* Activity Heatmap */}
+        <StreakHeatmap logs={allLogs} />
+
         {/* Charts */}
         <WeekdayChart logs={allLogs} />
         <HourlyChart logs={allLogs} />
