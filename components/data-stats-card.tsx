@@ -20,66 +20,61 @@ export function DataStatsCard({ habitCount, logCount }: DataStatsCardProps) {
   const colors = Colors[colorScheme];
 
   return (
-    <GlassCard variant="elevated" style={styles.card}>
-      <View style={styles.row}>
-        <View style={styles.item}>
-          <View style={[styles.iconCircle, { backgroundColor: colors.tint + "20" }]}>
-            <MaterialIcons name="auto-awesome" size={18} color={colors.tint} />
+    <View style={styles.container}>
+      <GlassCard variant="default" noPadding style={styles.card}>
+        <View style={styles.statContent}>
+          <View style={[styles.iconCircle, { backgroundColor: colors.tint + "15" }]}>
+            <MaterialIcons name="auto-awesome" size={16} color={colors.tint} />
           </View>
-          <View style={styles.textContainer}>
-            <ThemedText style={[styles.value, { color: colors.text }]}>{habitCount}</ThemedText>
-            <ThemedText style={[styles.label, { color: colors.muted }]}>Habits</ThemedText>
-          </View>
+          <ThemedText style={[styles.value, { color: colors.text }]}>{habitCount}</ThemedText>
+          <ThemedText style={[styles.label, { color: colors.muted }]}>
+            {habitCount <= 1 ? "habit" : "habits"}
+          </ThemedText>
         </View>
-        <View style={[styles.divider, { backgroundColor: colors.glassBorder }]} />
-        <View style={styles.item}>
-          <View style={[styles.iconCircle, { backgroundColor: colors.tintSecondary + "20" }]}>
-            <MaterialIcons name="history" size={18} color={colors.tintSecondary} />
+      </GlassCard>
+
+      <GlassCard variant="default" noPadding style={styles.card}>
+        <View style={styles.statContent}>
+          <View style={[styles.iconCircle, { backgroundColor: colors.tintSecondary + "15" }]}>
+            <MaterialIcons name="history" size={16} color={colors.tintSecondary} />
           </View>
-          <View style={styles.textContainer}>
-            <ThemedText style={[styles.value, { color: colors.text }]}>{logCount}</ThemedText>
-            <ThemedText style={[styles.label, { color: colors.muted }]}>Entries</ThemedText>
-          </View>
+          <ThemedText style={[styles.value, { color: colors.text }]}>{logCount}</ThemedText>
+          <ThemedText style={[styles.label, { color: colors.muted }]}>
+            {logCount <= 1 ? "entry" : "entries"}
+          </ThemedText>
         </View>
-      </View>
-    </GlassCard>
+      </GlassCard>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  card: {
+  container: {
+    flexDirection: "row",
+    gap: GlassStyles.spacing.sm,
     marginBottom: GlassStyles.spacing.lg,
   },
-  row: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  item: {
+  card: {
     flex: 1,
+  },
+  statContent: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 12,
+    padding: GlassStyles.spacing.md,
+    gap: 10,
   },
   iconCircle: {
-    width: 40,
-    height: 40,
-    borderRadius: 12,
+    width: 32,
+    height: 32,
+    borderRadius: 8,
     alignItems: "center",
     justifyContent: "center",
   },
-  textContainer: {
-    gap: 2,
-  },
   value: {
-    fontSize: 22,
+    fontSize: 18,
     fontWeight: "700",
   },
   label: {
-    ...Typography.caption1,
-  },
-  divider: {
-    width: 1,
-    height: 40,
-    marginHorizontal: GlassStyles.spacing.md,
+    ...Typography.footnote,
   },
 });
