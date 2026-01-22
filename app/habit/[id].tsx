@@ -428,7 +428,7 @@ const styles = StyleSheet.create({
     gap: GlassStyles.spacing.sm,
   },
   logButton: {
-    flex: 3,
+    flex: 1,
     borderRadius: GlassStyles.borderRadius.md,
     overflow: "hidden",
   },
@@ -445,7 +445,7 @@ const styles = StyleSheet.create({
     fontWeight: "600",
   },
   logButtonSecondary: {
-    flex: 2,
+    flex: 1,
     flexDirection: "row",
     paddingVertical: 14,
     borderRadius: GlassStyles.borderRadius.md,
