@@ -152,9 +152,9 @@ export function StreakHeatmap({ logs, weeks = 16 }: StreakHeatmapProps) {
                     styles.cell,
                     {
                       backgroundColor: getColor(cell.count, cell.isFuture),
-                      borderWidth: cell.isToday ? 1 : 0,
-                      borderColor: cell.isToday ? colors.text : "transparent",
                     },
+                    cell.isToday && styles.todayCell,
+                    cell.isToday && { borderColor: colors.tint },
                   ]}
                 />
               ))}
@@ -254,6 +254,11 @@ const styles = StyleSheet.create({
     height: 11,
     borderRadius: 2,
     marginRight: 2,
+  },
+  todayCell: {
+    borderWidth: 1.5,
+    borderRadius: 3,
+    transform: [{ scale: 1.1 }],
   },
   legend: {
     flexDirection: "row",
