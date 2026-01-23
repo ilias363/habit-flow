@@ -73,7 +73,7 @@ export function LogEntry({ log, color, onDelete }: LogEntryProps) {
       </View>
       {onDelete && (
         <Pressable onPress={onDelete} style={styles.deleteButton}>
-          <MaterialIcons name="close" size={18} color={colors.danger} />
+          <MaterialIcons name="delete-outline" size={18} color={colors.danger} />
         </Pressable>
       )}
     </Pressable>
