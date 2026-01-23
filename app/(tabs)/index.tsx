@@ -60,13 +60,11 @@ export default function HomeScreen() {
     const weeklyLogs = allLogs.filter(log => log.timestamp >= oneWeekAgo);
     const todayLogs = habits.reduce((acc, h) => acc + h.todayLogs, 0);
     const totalAllTime = allLogs.length;
-    const longestStreak = Math.max(0, ...habits.map(h => h.currentStreak));
 
     return {
       weeklyEntries: weeklyLogs.length,
       todayEntries: todayLogs,
       totalEntries: totalAllTime,
-      bestStreak: longestStreak,
       activeHabits: habits.length,
     };
   };
@@ -80,21 +78,8 @@ export default function HomeScreen() {
       <View style={styles.headerContent}>
         {/* Stats Row - Horizontal scroll */}
         <View style={styles.statsRow}>
-          {/* Weekly Entries */}
-          <GlassCard variant="elevated" noPadding style={styles.statCard}>
-            <View style={styles.statCardInner}>
-              <View style={[styles.statIconCircle, { backgroundColor: colors.tint + "20" }]}>
-                <MaterialIcons name="date-range" size={18} color={colors.tint} />
-              </View>
-              <ThemedText style={[styles.statValue, { color: colors.text }]}>
-                {stats.weeklyEntries}
-              </ThemedText>
-              <ThemedText style={[styles.statLabel, { color: colors.muted }]}>This Week</ThemedText>
-            </View>
-          </GlassCard>
-
           {/* Today */}
-          <GlassCard variant="default" noPadding style={styles.statCard}>
+          <GlassCard variant="elevated" noPadding style={styles.statCard}>
             <View style={styles.statCardInner}>
               <View style={[styles.statIconCircle, { backgroundColor: colors.success + "20" }]}>
                 <MaterialIcons name="today" size={18} color={colors.success} />
@@ -106,16 +91,16 @@ export default function HomeScreen() {
             </View>
           </GlassCard>
 
-          {/* Streak */}
+          {/* Weekly Entries */}
           <GlassCard variant="default" noPadding style={styles.statCard}>
             <View style={styles.statCardInner}>
-              <View style={[styles.statIconCircle, { backgroundColor: colors.warning + "20" }]}>
-                <ThemedText style={{ fontSize: 14 }}>🔥</ThemedText>
+              <View style={[styles.statIconCircle, { backgroundColor: colors.tint + "20" }]}>
+                <MaterialIcons name="date-range" size={18} color={colors.tint} />
               </View>
               <ThemedText style={[styles.statValue, { color: colors.text }]}>
-                {stats.bestStreak}
+                {stats.weeklyEntries}
               </ThemedText>
-              <ThemedText style={[styles.statLabel, { color: colors.muted }]}>Streak</ThemedText>
+              <ThemedText style={[styles.statLabel, { color: colors.muted }]}>This Week</ThemedText>
             </View>
           </GlassCard>
 
