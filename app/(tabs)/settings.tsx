@@ -19,7 +19,15 @@ import { GradientBackground } from "@/components/ui/gradient-background";
 import { Colors, GlassStyles, Typography } from "@/constants/theme";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 import { useHabits } from "@/hooks/use-habits";
-import { clearAllData, getHabits, getLogs, saveHabits, saveLogs } from "@/lib/storage";
+import { useTheme } from "@/hooks/use-theme-context";
+import {
+  clearAllData,
+  getHabits,
+  getLogs,
+  saveHabits,
+  saveLogs,
+  ThemePreference,
+} from "@/lib/storage";
 import { Habit, HabitLog } from "@/types";
 
 interface ExportData {
@@ -31,6 +39,7 @@ interface ExportData {
 
 export default function SettingsScreen() {
   const { refreshHabits } = useHabits();
+  const { theme, setTheme } = useTheme();
   const [loading, setLoading] = useState<string | null>(null);
   const [stats, setStats] = useState({ habitCount: 0, logCount: 0 });
 
@@ -47,6 +56,35 @@ export default function SettingsScreen() {
       loadStats();
     }, []),
   );
+
+  const handleThemeChange = () => {
+    const themes: ThemePreference[] = ["system", "light", "dark"];
+    const currentIndex = themes.indexOf(theme);
+    const nextTheme = themes[(currentIndex + 1) % themes.length];
+    setTheme(nextTheme);
+  };
+
+  const getThemeLabel = () => {
+    switch (theme) {
+      case "light":
+        return "Light";
+      case "dark":
+        return "Dark";
+      default:
+        return "System";
+    }
+  };
+
+  const getThemeIcon = (): "brightness-auto" | "light-mode" | "dark-mode" => {
+    switch (theme) {
+      case "light":
+        return "light-mode";
+      case "dark":
+        return "dark-mode";
+      default:
+        return "brightness-auto";
+    }
+  };
 
   const handleExport = async () => {
     try {
@@ -205,6 +243,20 @@ export default function SettingsScreen() {
 
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
         <DataStatsCard habitCount={stats.habitCount} logCount={stats.logCount} />
+
+        <View style={styles.section}>
+          <ThemedText style={[styles.sectionTitle, { color: colors.text }]}>Appearance</ThemedText>
+          <GlassCard variant="default" noPadding style={styles.card}>
+            <SettingsButton
+              icon={getThemeIcon()}
+              iconColor={colors.tint}
+              title="Theme"
+              description={getThemeLabel()}
+              onPress={handleThemeChange}
+              isLast
+            />
+          </GlassCard>
+        </View>
 
         <View style={styles.section}>
           <ThemedText style={[styles.sectionTitle, { color: colors.text }]}>

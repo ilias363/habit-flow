@@ -10,6 +10,27 @@ const storage = createMMKV({ id: "habit-flow-storage" });
 
 const HABITS_KEY = "habits";
 const LOGS_KEY = "logs";
+const THEME_KEY = "theme";
+
+export type ThemePreference = "system" | "light" | "dark";
+
+// ============ THEME ============
+
+export function getThemePreference(): ThemePreference {
+  try {
+    const theme = storage.getString(THEME_KEY);
+    if (theme === "light" || theme === "dark" || theme === "system") {
+      return theme;
+    }
+    return "system";
+  } catch {
+    return "system";
+  }
+}
+
+export function saveThemePreference(theme: ThemePreference): void {
+  storage.set(THEME_KEY, theme);
+}
 
 // Generate unique ID
 export function generateId(): string {
