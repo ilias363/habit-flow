@@ -8,6 +8,7 @@ import { useFocusEffect, useRouter } from "expo-router";
 import { useCallback, useState } from "react";
 import { Pressable, ScrollView, StyleSheet, View } from "react-native";
 
+import { HabitFilter } from "@/components/habit-filter";
 import { HourlyChart } from "@/components/hourly-chart";
 import { RecentActivity } from "@/components/recent-activity";
 import { ScreenHeader } from "@/components/screen-header";
@@ -19,7 +20,8 @@ import { WeekdayChart } from "@/components/weekday-chart";
 import { Colors, GlassStyles, Typography } from "@/constants/theme";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 import { useHabits } from "@/hooks/use-habits";
-import { formatRelativeTime, getLogs } from "@/lib";
+import { useFilteredStats } from "@/hooks/use-filtered-stats";
+import { adjustColor, formatRelativeTime, getLogs } from "@/lib";
 import { HabitLog, HabitWithStats } from "@/types";
 
 export default function StatsScreen() {
@@ -27,6 +29,7 @@ export default function StatsScreen() {
   const { habits, refreshHabits } = useHabits();
   const [allLogs, setAllLogs] = useState<HabitLog[]>([]);
   const [selectedHabit, setSelectedHabit] = useState<HabitWithStats | null>(null);
+  const [filterHabitId, setFilterHabitId] = useState<string | null>(null);
 
   const colorScheme = useColorScheme() ?? "light";
   const colors = Colors[colorScheme];
@@ -37,6 +40,15 @@ export default function StatsScreen() {
       setAllLogs(getLogs());
     }, [refreshHabits]),
   );
+
+  // Use cached stats for performance
+  const { filteredLogs, heatmapData, weekdayData, hourlyData } = useFilteredStats(
+    allLogs,
+    filterHabitId,
+  );
+
+  // Get the selected filter habit for display
+  const filterHabit = filterHabitId ? habits.find(h => h.id === filterHabitId) : null;
 
   const getHabitStats = (habit: HabitWithStats) => {
     const habitLogs = allLogs.filter(l => l.habitId === habit.id);
@@ -54,15 +66,32 @@ export default function StatsScreen() {
       <ScreenHeader title="Insights" subtitle="Your Progress" />
 
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
+        {/* Habit Filter */}
+        {habits.length > 0 && (
+          <HabitFilter
+            habits={habits}
+            selectedHabitId={filterHabitId}
+            onSelect={setFilterHabitId}
+          />
+        )}
+
         {/* Activity Heatmap */}
-        <StreakHeatmap logs={allLogs} />
+        <StreakHeatmap
+          logs={filteredLogs}
+          cachedData={heatmapData}
+          habitColor={filterHabit?.color}
+        />
 
         {/* Charts */}
-        <WeekdayChart logs={allLogs} />
-        <HourlyChart logs={allLogs} />
+        <WeekdayChart
+          logs={filteredLogs}
+          cachedData={weekdayData}
+          habitColor={filterHabit?.color}
+        />
+        <HourlyChart logs={filteredLogs} cachedData={hourlyData} habitColor={filterHabit?.color} />
 
         {/* Recent Activity */}
-        <RecentActivity logs={allLogs} habits={habits} />
+        <RecentActivity logs={filteredLogs} habits={habits} filterHabitId={filterHabitId} />
 
         {/* Habit Details */}
         {habits.length > 0 && (
@@ -175,15 +204,6 @@ export default function StatsScreen() {
       </ScrollView>
     </GradientBackground>
   );
-}
-
-function adjustColor(color: string, amount: number): string {
-  const clamp = (val: number) => Math.min(255, Math.max(0, val));
-  const hex = color.replace("#", "");
-  const r = clamp(parseInt(hex.slice(0, 2), 16) + amount);
-  const g = clamp(parseInt(hex.slice(2, 4), 16) + amount);
-  const b = clamp(parseInt(hex.slice(4, 6), 16) + amount);
-  return `#${r.toString(16).padStart(2, "0")}${g.toString(16).padStart(2, "0")}${b.toString(16).padStart(2, "0")}`;
 }
 
 const styles = StyleSheet.create({

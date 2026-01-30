@@ -11,6 +11,7 @@ import { ThemedText } from "@/components/themed-text";
 import { GlassCard } from "@/components/ui/glass-card";
 import { Colors, GlassStyles, Typography } from "@/constants/theme";
 import { useColorScheme } from "@/hooks/use-color-scheme";
+import { adjustColor, formatRelativeTime } from "@/lib";
 import { HabitWithStats } from "@/types";
 
 interface HabitCardProps {
@@ -28,20 +29,9 @@ export function HabitCard({ habit, onPress, onLog }: HabitCardProps) {
     onLog();
   };
 
-  const formatLastLog = () => {
-    if (!habit.lastLogDate) return "Not logged yet";
-    const now = Date.now();
-    const diff = now - habit.lastLogDate;
-    const minutes = Math.floor(diff / (1000 * 60));
-    const hours = Math.floor(diff / (1000 * 60 * 60));
-    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-
-    if (minutes < 1) return "Just now";
-    if (minutes < 60) return `${minutes}m ago`;
-    if (hours < 24) return `${hours}h ago`;
-    if (days === 1) return "Yesterday";
-    return `${days}d ago`;
-  };
+  const lastLogText = habit.lastLogDate
+    ? formatRelativeTime(habit.lastLogDate)
+    : "Not logged yet";
 
   const hasLogsThisWeek = habit.weeklyLogs > 0;
 
@@ -75,7 +65,7 @@ export function HabitCard({ habit, onPress, onLog }: HabitCardProps) {
                 </View>
               )}
               <ThemedText style={[styles.lastLog, { color: colors.muted }]}>
-                {formatLastLog()}
+                {lastLogText}
               </ThemedText>
             </View>
           </View>
@@ -117,16 +107,6 @@ export function HabitCard({ habit, onPress, onLog }: HabitCardProps) {
       </GlassCard>
     </Pressable>
   );
-}
-
-// Helper to darken/lighten color
-function adjustColor(color: string, amount: number): string {
-  const clamp = (val: number) => Math.min(255, Math.max(0, val));
-  const hex = color.replace("#", "");
-  const r = clamp(parseInt(hex.slice(0, 2), 16) + amount);
-  const g = clamp(parseInt(hex.slice(2, 4), 16) + amount);
-  const b = clamp(parseInt(hex.slice(4, 6), 16) + amount);
-  return `#${r.toString(16).padStart(2, "0")}${g.toString(16).padStart(2, "0")}${b.toString(16).padStart(2, "0")}`;
 }
 
 const styles = StyleSheet.create({

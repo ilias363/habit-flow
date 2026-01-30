@@ -9,40 +9,54 @@ import { ThemedText } from "@/components/themed-text";
 import { GlassCard } from "@/components/ui/glass-card";
 import { Colors, GlassStyles, Typography } from "@/constants/theme";
 import { useColorScheme } from "@/hooks/use-color-scheme";
-import { HabitLog } from "@/types";
+import { adjustColor } from "@/lib";
+import { HabitLog, HourlyData } from "@/types";
 
 interface HourlyChartProps {
   logs: HabitLog[];
+  cachedData?: HourlyData[];
+  habitColor?: string;
 }
 
-export function HourlyChart({ logs }: HourlyChartProps) {
+export function HourlyChart({ logs, cachedData, habitColor }: HourlyChartProps) {
   const colorScheme = useColorScheme() ?? "light";
   const colors = Colors[colorScheme];
 
-  const currentHour = new Date().getHours();
+  // Use habit color if provided, otherwise use theme tint
+  const accentColor = habitColor || colors.tint;
 
-  // Group into 4-hour intervals
-  const intervals = [
-    { label: "12-4a", start: 0, end: 4, count: 0 },
-    { label: "4-8a", start: 4, end: 8, count: 0 },
-    { label: "8-12p", start: 8, end: 12, count: 0 },
-    { label: "12-4p", start: 12, end: 16, count: 0 },
-    { label: "4-8p", start: 16, end: 20, count: 0 },
-    { label: "8-12a", start: 20, end: 24, count: 0 },
-  ];
+  // Use cached data if provided, otherwise compute
+  const hourlyData = (() => {
+    if (cachedData) return cachedData;
 
-  logs.forEach(log => {
-    const hour = new Date(log.timestamp).getHours();
-    const interval = intervals.find(i => hour >= i.start && hour < i.end);
-    if (interval) interval.count++;
-  });
+    const currentHour = new Date().getHours();
+    const intervals = [
+      { label: "12-4a", start: 0, end: 4, count: 0 },
+      { label: "4-8a", start: 4, end: 8, count: 0 },
+      { label: "8-12p", start: 8, end: 12, count: 0 },
+      { label: "12-4p", start: 12, end: 16, count: 0 },
+      { label: "4-8p", start: 16, end: 20, count: 0 },
+      { label: "8-12a", start: 20, end: 24, count: 0 },
+    ];
 
-  const hourlyData = intervals.map(i => ({
-    ...i,
-    isCurrent: currentHour >= i.start && currentHour < i.end,
-  }));
+    logs.forEach(log => {
+      const hour = new Date(log.timestamp).getHours();
+      const interval = intervals.find(i => hour >= i.start && hour < i.end);
+      if (interval) interval.count++;
+    });
+
+    return intervals.map(i => ({
+      ...i,
+      isCurrent: currentHour >= i.start && currentHour < i.end,
+    }));
+  })();
 
   const maxCount = Math.max(1, ...hourlyData.map(d => d.count));
+
+  // Create gradient colors based on accent color
+  const gradientPrimary: [string, string] = habitColor
+    ? [habitColor, adjustColor(habitColor, -30)]
+    : colors.gradientPrimary;
 
   return (
     <GlassCard variant="elevated" style={styles.container}>
@@ -58,7 +72,7 @@ export function HourlyChart({ logs }: HourlyChartProps) {
                 <LinearGradient
                   colors={
                     interval.isCurrent
-                      ? colors.gradientPrimary
+                      ? gradientPrimary
                       : ([colors.muted + "60", colors.muted + "40"] as [string, string])
                   }
                   start={{ x: 0, y: 1 }}
@@ -86,13 +100,13 @@ export function HourlyChart({ logs }: HourlyChartProps) {
             <View
               style={[
                 styles.labelContainer,
-                interval.isCurrent && { backgroundColor: colors.tint + "20" },
+                interval.isCurrent && { backgroundColor: accentColor + "20" },
               ]}
             >
               <ThemedText
                 style={[
                   styles.label,
-                  { color: interval.isCurrent ? colors.tint : colors.muted },
+                  { color: interval.isCurrent ? accentColor : colors.muted },
                   interval.isCurrent && styles.labelActive,
                 ]}
                 numberOfLines={1}

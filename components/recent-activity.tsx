@@ -16,9 +16,10 @@ interface RecentActivityProps {
   logs: HabitLog[];
   habits: HabitWithStats[];
   limit?: number;
+  filterHabitId?: string | null;
 }
 
-export function RecentActivity({ logs, habits, limit = 6 }: RecentActivityProps) {
+export function RecentActivity({ logs, habits, limit = 6, filterHabitId }: RecentActivityProps) {
   const colorScheme = useColorScheme() ?? "light";
   const colors = Colors[colorScheme];
 
@@ -28,11 +29,16 @@ export function RecentActivity({ logs, habits, limit = 6 }: RecentActivityProps)
     .map(log => ({ ...log, habit: habits.find(h => h.id === log.habitId) }))
     .filter(item => item.habit);
 
+  // Get title based on filter
+  const title = filterHabitId
+    ? (habits.find(h => h.id === filterHabitId)?.name ?? "Recent") + " Activity"
+    : "Recent Activity";
+
   if (recentItems.length === 0) return null;
 
   return (
     <View style={styles.section}>
-      <ThemedText style={[styles.title, { color: colors.text }]}>Recent Activity</ThemedText>
+      <ThemedText style={[styles.title, { color: colors.text }]}>{title}</ThemedText>
       <GlassCard variant="default" noPadding style={styles.list}>
         {recentItems.map((item, index) => (
           <View

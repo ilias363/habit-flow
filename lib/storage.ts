@@ -2,7 +2,7 @@
  * Storage layer for habit data persistence using MMKV (30x faster than AsyncStorage)
  */
 
-import { Habit, HabitLog } from "@/types";
+import { Habit, HabitLog, ThemePreference } from "@/types";
 import { createMMKV } from "react-native-mmkv";
 
 // Initialize MMKV storage
@@ -11,8 +11,6 @@ const storage = createMMKV({ id: "habit-flow-storage" });
 const HABITS_KEY = "habits";
 const LOGS_KEY = "logs";
 const THEME_KEY = "theme";
-
-export type ThemePreference = "system" | "light" | "dark";
 
 // ============ THEME ============
 

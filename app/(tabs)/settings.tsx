@@ -26,9 +26,8 @@ import {
   getLogs,
   saveHabits,
   saveLogs,
-  ThemePreference,
 } from "@/lib/storage";
-import { Habit, HabitLog } from "@/types";
+import { Habit, HabitLog, ThemePreference } from "@/types";
 
 interface ExportData {
   version: 1;

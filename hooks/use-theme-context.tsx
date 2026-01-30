@@ -5,7 +5,8 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { useColorScheme as useSystemColorScheme } from "react-native";
 
-import { getThemePreference, saveThemePreference, ThemePreference } from "@/lib/storage";
+import { getThemePreference, saveThemePreference } from "@/lib/storage";
+import { ThemePreference } from "@/types";
 
 interface ThemeContextValue {
   theme: ThemePreference;

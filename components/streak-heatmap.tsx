@@ -8,18 +8,23 @@ import { ThemedText } from "@/components/themed-text";
 import { GlassCard } from "@/components/ui/glass-card";
 import { Colors, GlassStyles, Typography } from "@/constants/theme";
 import { useColorScheme } from "@/hooks/use-color-scheme";
-import { HabitLog } from "@/types";
+import { HabitLog, HeatmapData } from "@/types";
 
 interface StreakHeatmapProps {
   logs: HabitLog[];
   weeks?: number;
+  cachedData?: HeatmapData;
+  habitColor?: string;
 }
 
 const DAYS = ["", "M", "", "W", "", "F", ""];
 
-export function StreakHeatmap({ logs, weeks = 16 }: StreakHeatmapProps) {
+export function StreakHeatmap({ logs, weeks = 16, cachedData, habitColor }: StreakHeatmapProps) {
   const colorScheme = useColorScheme() ?? "light";
   const colors = Colors[colorScheme];
+
+  // Use habit color if provided, otherwise use theme tint
+  const accentColor = habitColor || colors.tint;
 
   // Calculate date range - last N weeks ending today
   const today = new Date();
@@ -30,16 +35,29 @@ export function StreakHeatmap({ logs, weeks = 16 }: StreakHeatmapProps) {
   startDate.setDate(startDate.getDate() - todayDayOfWeek - (weeks - 1) * 7);
   startDate.setHours(0, 0, 0, 0);
 
-  // Count logs per day
-  const logsByDay: Record<string, number> = {};
-  logs.forEach(log => {
-    const date = new Date(log.timestamp);
-    const key = `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`;
-    logsByDay[key] = (logsByDay[key] || 0) + 1;
-  });
+  // Use cached data if provided, otherwise compute
+  const { logsByDay, maxLogs, totalActiveDays } = (() => {
+    if (cachedData) {
+      return {
+        logsByDay: cachedData.logsByDay,
+        maxLogs: cachedData.maxLogs,
+        totalActiveDays: cachedData.totalActiveDays,
+      };
+    }
 
-  // Find max for scaling intensity
-  const maxLogs = Math.max(1, ...Object.values(logsByDay));
+    // Fallback: compute if no cached data
+    const computed: Record<string, number> = {};
+    logs.forEach(log => {
+      const date = new Date(log.timestamp);
+      const key = `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`;
+      computed[key] = (computed[key] || 0) + 1;
+    });
+    return {
+      logsByDay: computed,
+      maxLogs: Math.max(1, ...Object.values(computed)),
+      totalActiveDays: Object.keys(computed).length,
+    };
+  })();
 
   // Generate grid data
   const gridData: { date: Date; count: number; isToday: boolean; isFuture: boolean }[][] = [];
@@ -71,14 +89,14 @@ export function StreakHeatmap({ logs, weeks = 16 }: StreakHeatmapProps) {
     if (count === 0) return colorScheme === "dark" ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.06)";
 
     const intensity = Math.min(count / maxLogs, 1);
-    if (intensity < 0.25) return colors.tint + "40";
-    if (intensity < 0.5) return colors.tint + "70";
-    if (intensity < 0.75) return colors.tint + "A0";
-    return colors.tint;
+    if (intensity < 0.25) return accentColor + "40";
+    if (intensity < 0.5) return accentColor + "70";
+    if (intensity < 0.75) return accentColor + "A0";
+    return accentColor;
   };
 
   // Calculate total activity stats
-  const totalDays = Object.keys(logsByDay).length;
+  const totalDays = totalActiveDays;
 
   // Get month labels for header
   const months: { label: string; week: number }[] = [];
@@ -106,7 +124,7 @@ export function StreakHeatmap({ logs, weeks = 16 }: StreakHeatmapProps) {
           </ThemedText>
         </View>
         <View style={styles.activeDays}>
-          <ThemedText style={[styles.activeDaysValue, { color: colors.tint }]}>
+          <ThemedText style={[styles.activeDaysValue, { color: accentColor }]}>
             {totalDays}
           </ThemedText>
           <ThemedText style={[styles.activeDaysLabel, { color: colors.muted }]}>
@@ -154,7 +172,7 @@ export function StreakHeatmap({ logs, weeks = 16 }: StreakHeatmapProps) {
                       backgroundColor: getColor(cell.count, cell.isFuture),
                     },
                     cell.isToday && styles.todayCell,
-                    cell.isToday && { borderColor: colors.tint },
+                    cell.isToday && { borderColor: accentColor },
                   ]}
                 />
               ))}
@@ -175,10 +193,10 @@ export function StreakHeatmap({ logs, weeks = 16 }: StreakHeatmapProps) {
             },
           ]}
         />
-        <View style={[styles.legendCell, { backgroundColor: colors.tint + "40" }]} />
-        <View style={[styles.legendCell, { backgroundColor: colors.tint + "70" }]} />
-        <View style={[styles.legendCell, { backgroundColor: colors.tint + "A0" }]} />
-        <View style={[styles.legendCell, { backgroundColor: colors.tint }]} />
+        <View style={[styles.legendCell, { backgroundColor: accentColor + "40" }]} />
+        <View style={[styles.legendCell, { backgroundColor: accentColor + "70" }]} />
+        <View style={[styles.legendCell, { backgroundColor: accentColor + "A0" }]} />
+        <View style={[styles.legendCell, { backgroundColor: accentColor }]} />
         <ThemedText style={[styles.legendLabel, { color: colors.muted }]}>More</ThemedText>
       </View>
     </GlassCard>

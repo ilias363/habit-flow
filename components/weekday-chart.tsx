@@ -9,34 +9,46 @@ import { ThemedText } from "@/components/themed-text";
 import { GlassCard } from "@/components/ui/glass-card";
 import { Colors, GlassStyles, Typography } from "@/constants/theme";
 import { useColorScheme } from "@/hooks/use-color-scheme";
-import { HabitLog } from "@/types";
+import { adjustColor, DAY_NAMES, FULL_DAY_NAMES } from "@/lib";
+import { HabitLog, WeekdayData } from "@/types";
 
 interface WeekdayChartProps {
   logs: HabitLog[];
+  cachedData?: WeekdayData[];
+  habitColor?: string;
 }
 
-const DAY_NAMES = ["S", "M", "T", "W", "T", "F", "S"];
-const FULL_DAY_NAMES = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-
-export function WeekdayChart({ logs }: WeekdayChartProps) {
+export function WeekdayChart({ logs, cachedData, habitColor }: WeekdayChartProps) {
   const colorScheme = useColorScheme() ?? "light";
   const colors = Colors[colorScheme];
 
-  const today = new Date().getDay();
+  // Use habit color if provided, otherwise use theme tint
+  const accentColor = habitColor || colors.tint;
 
-  const counts = [0, 0, 0, 0, 0, 0, 0];
-  logs.forEach(log => {
-    const day = new Date(log.timestamp).getDay();
-    counts[day]++;
-  });
-  const weekdayData = FULL_DAY_NAMES.map((name, i) => ({
-    name: DAY_NAMES[i],
-    fullName: name,
-    count: counts[i],
-    isToday: i === today,
-  }));
+  // Use cached data if provided, otherwise compute
+  const weekdayData = (() => {
+    if (cachedData) return cachedData;
+
+    const today = new Date().getDay();
+    const counts = [0, 0, 0, 0, 0, 0, 0];
+    logs.forEach(log => {
+      const day = new Date(log.timestamp).getDay();
+      counts[day]++;
+    });
+    return FULL_DAY_NAMES.map((name, i) => ({
+      name: DAY_NAMES[i],
+      fullName: name,
+      count: counts[i],
+      isToday: i === today,
+    }));
+  })();
 
   const maxCount = Math.max(1, ...weekdayData.map(d => d.count));
+
+  // Create gradient colors based on accent color
+  const gradientPrimary: [string, string] = habitColor
+    ? [habitColor, adjustColor(habitColor, -30)]
+    : colors.gradientPrimary;
 
   return (
     <GlassCard variant="elevated" style={styles.container}>
@@ -52,7 +64,7 @@ export function WeekdayChart({ logs }: WeekdayChartProps) {
                 <LinearGradient
                   colors={
                     day.isToday
-                      ? colors.gradientPrimary
+                      ? gradientPrimary
                       : ([colors.muted + "60", colors.muted + "40"] as [string, string])
                   }
                   start={{ x: 0, y: 1 }}
@@ -80,13 +92,13 @@ export function WeekdayChart({ logs }: WeekdayChartProps) {
             <View
               style={[
                 styles.labelContainer,
-                day.isToday && { backgroundColor: colors.tint + "20" },
+                day.isToday && { backgroundColor: accentColor + "20" },
               ]}
             >
               <ThemedText
                 style={[
                   styles.label,
-                  { color: day.isToday ? colors.tint : colors.muted },
+                  { color: day.isToday ? accentColor : colors.muted },
                   day.isToday && styles.labelActive,
                 ]}
               >
