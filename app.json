@@ -4,7 +4,7 @@
     "slug": "habit-flow",
     "version": "1.4.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "./assets/icons/app-icon-light.png",
     "scheme": "habitflow",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
@@ -34,7 +34,7 @@
     },
     "web": {
       "output": "static",
-      "favicon": "./assets/images/favicon.png"
+      "favicon": "./assets/icons/app-icon-light.png"
     },
     "plugins": [
       "expo-router",
